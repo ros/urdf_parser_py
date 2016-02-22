@@ -1,0 +1,7 @@
+sudo: required
+dist: trusty
+language: generic
+script: "./.travis/build"
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq libtinyxml-dev python-yaml python-mock
