@@ -2,8 +2,8 @@
 Changelog for package urdfdom_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.1 (2016-02-22)
+------------------
 * Add travis
 * Add package.xml for ROS release
 * Tweak CMakeLists to reflect migration from urdfdom
