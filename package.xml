@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>urdfdom_py</name>
-  <version>0.3.1</version>
+  <version>0.3.2</version>
   <description>Python implementation of the URDF parser.</description>
   <maintainer email="isucan@google.com">Ioan Sucan</maintainer>
   <maintainer email="jacquelinekay1@gmail.com">Jackie Kay</maintainer>
