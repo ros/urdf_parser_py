@@ -21,7 +21,7 @@ def reflect(cls, *args, **kwargs):
 # How to incorporate line number and all that jazz?
 def on_error(message):
 	""" What to do on an error. This can be changed to raise an exception. """
-	sys.stderr.write(message)
+	sys.stderr.write(message + '\n')
 
 skip_default = True
 #defaultIfMatching = True # Not implemeneted yet
