@@ -41,15 +41,16 @@ xml_string = """
     </joint>
     <actuator name="foo_motor"/>
   </transmission>
-  <transmission name="simple_trans_2">
+  <transmission name="simple_trans_bad">
     <type>transmission_interface/SimpleTransmission</type>
     <actuator name="foo_motor"/>
-    <joint na_me="foo_joint">
+    <joint name_BAD="foo_joint">
       <hardwareInterface>EffortJointInterface</hardwareInterface>
     </joint>
   </transmission>
 </robot>
 """
+messages = []
 try:
     urdf.Robot.from_xml_string(xml_string)
 except urdf.xmlr.core.ParseError, e:

@@ -121,10 +121,10 @@ class GeometricType(xmlr.ValueType):
 			'mesh': Mesh
 			})
 	
-	def from_xml(self, node):
+	def from_xml(self, node, path):
 		children = xml_children(node)
 		assert len(children) == 1, 'One element only for geometric'
-		return self.factory.from_xml(children[0])
+		return self.factory.from_xml(children[0], path = path)
 	
 	def write_xml(self, node, obj):
 		name = self.factory.get_name(obj)
