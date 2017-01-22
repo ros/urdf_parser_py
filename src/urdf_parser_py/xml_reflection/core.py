@@ -542,8 +542,13 @@ class Object(YamlReflection):
 	def read_xml(self, node, path):
 		self.XML_REFL.set_from_xml(self, node, path)
 		self.post_read_xml()
-		self.check_valid()
-		
+		try:
+			self.check_valid()
+		except ParseError:
+			raise
+		except Exception, e:
+			raise ParseError(e, path)
+	
 	@classmethod
 	def from_xml(cls, node, path):
 		cur_type = get_type(cls)

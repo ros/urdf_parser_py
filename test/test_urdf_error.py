@@ -49,6 +49,26 @@ class TestURDFParserError(unittest.TestCase):
         func = lambda: urdf.Link.from_xml_string(xml_string)
         self.assertParseErrorPath('/link', func)
     
+    def test_invalid_joint_type(self):
+        xml_string = '''<?xml version="1.0"?>
+<joint name="bad_joint" type="badtype">
+    <parent link="parent"/>
+    <child link="child"/>
+</joint>'''
+        func = lambda: urdf.Joint.from_xml_string(xml_string)
+        self.assertParseErrorPath("/joint[@name='bad_joint']", func)
+    
+    def test_invalid_joint_type_in_robot(self):
+        xml_string = '''<?xml version="1.0"?>
+<robot name="test">
+    <joint name="bad_joint" type="badtype">
+        <parent link="parent"/>
+        <child link="child"/>
+    </joint>
+</robot>'''
+        func = lambda: urdf.Robot.from_xml_string(xml_string)
+        self.assertParseErrorPath("/robot[@name='test']/joint[@name='bad_joint']", func)
+    
     def test_unset_required_name_aggregate_in_robot(self):
         """ Show that an aggregate with an unset name still has its index specified """
         xml_string = '''<?xml version="1.0"?>
