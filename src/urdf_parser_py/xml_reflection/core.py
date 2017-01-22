@@ -240,7 +240,8 @@ class DuckTypedFactory(ValueType):
 		out = "Could not perform duck-typed parsing."
 		for (value_type, e) in error_set:
 			out += "\nValue Type: {}\nException: {}\n".format(value_type, e)
-		raise Exception(out)
+		e = Exception(out)
+		raise ParseError(e, path = path)
 	
 	def write_xml(self, node, obj):
 		obj.write_xml(node)
