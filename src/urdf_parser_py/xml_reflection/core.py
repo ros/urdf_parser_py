@@ -335,12 +335,6 @@ class AggregateElement(Element):
 		self.is_aggregate = True
 		
 	def add_from_xml(self, obj, node, path = None):
-		# Check if an index should be added
-		if len(path.suffix) == 0:
-			values = obj.get_aggregate_list(self.xml_var)
-			path = copy.copy(path)
-			index = 1 + len(values) # 1-based indexing
-			path.suffix = "[{}]".format(index)
 		value = self.value_type.from_xml(node, path = path)
 		obj.add_aggregate(self.xml_var, value)
 	
@@ -442,6 +436,8 @@ class Reflection(object):
 				unset_attributes.remove(xml_var)
 				info.attributes.remove(xml_var)
 		
+		print path
+		
 		# Parse unconsumed nodes
 		for child in copy.copy(info.children):
 			tag = child.tag
@@ -451,6 +447,10 @@ class Reflection(object):
 				element_path = Path(element.xml_var, parent = path)
 				
 				if element.is_aggregate:
+					# Add an index (allow this to be overriden)
+					values = obj.get_aggregate_list(element.xml_var)
+					index = 1 + len(values) # 1-based indexing for W3C XPath
+					element_path.suffix = "[{}]".format(index)
 					element.add_from_xml(obj, child, path = element_path)
 				else:
 					if tag in unset_scalars:
