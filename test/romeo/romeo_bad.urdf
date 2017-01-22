@@ -7,16 +7,16 @@
 <robot xmlns:xacro="http://ros.org/wiki/xacro" name="romeo">
   <link name="base_link"/>
 
-  <link name="body asdf">
+  <link name="body">
     <inertial>
-      <origin xyz="0.0__0932 0.0005 -0.2119" rpy="0 0 0"/>
-      <ma_ss value="4.16277"/>
+      <origin xyz="0.00932 0.0005 -0.2119" rpy="0 0 0"/>
+      <mass value="4.16277"/>
       <inertia ixx="0.24187936706" ixy="-6.889635e-05" ixz="0.00282915469" iyy="0.23816771319" iyz="0.00030625215" izz="0.02147385599" />
     </inertial>
     <visual>
-      <origin xy_z="0 0 0" rpy="0 0 0" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-	<mesh file_ASDfname="package://romeo_description/meshes/Waist.dae" />
+	<mesh filename="package://romeo_description/meshes/Waist.dae" />
       </geometry>
     </visual>
     <collision>
@@ -1555,7 +1555,7 @@
     <axis xyz="0 0 1"/>
     <parent link="gaze"/>
     <child link="REyePitch_link"/>
-    <limit effort="0" lower="-0.523598766666667" upper="0.523598766666667" velocity="0" />
+    <limit effort="0" lower="-0.5235___98766666667" upper="0.523598766666667" velocity="0" />
   </joint>
   <link name="REyePitch_link"/>
 
