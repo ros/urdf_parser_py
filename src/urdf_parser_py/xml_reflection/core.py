@@ -97,7 +97,7 @@ class Path(object):
 		if self.parent is not None:
 			return "{}/{}{}".format(self.parent, self.tag, self.suffix)
 		else:
-			if len(self.tag) > 0:
+			if self.tag is not None and len(self.tag) > 0:
 				return "/{}{}".format(self.tag, self.suffix)
 			else:
 				return self.suffix
@@ -414,29 +414,39 @@ class Reflection(object):
 		unset_attributes = list(self.attribute_map.keys())
 		unset_scalars = copy.copy(self.scalarNames)
 		
+		assert path is not None
+		
+		def get_attr_path(attribute):
+			attr_path = copy.copy(path)
+			attr_path.suffix += '[@{}]'.format(attribute)
+			return attr_path
+		def get_element_path(element):
+			element_path = Path(element.xml_var, parent = path)
+			# Add an index (allow this to be overriden)
+			if element.is_aggregate:
+				values = obj.get_aggregate_list(element.xml_var)
+				index = 1 + len(values) # 1-based indexing for W3C XPath
+				element_path.suffix = "[{}]".format(index)
+			return element_path
+		
 		id_var = "name"
 		# Better method? Queues?
 		for xml_var in copy.copy(info.attributes):
 			attribute = self.attribute_map.get(xml_var)
 			if attribute is not None:
 				value = node.attrib[xml_var]
-				assert path is not None
-				attr_path = copy.copy(path)
-				attr_path.suffix += '[@{}]'.format(xml_var)
+				attr_path = get_attr_path(attribute)
 				try:
 					attribute.set_from_string(obj, value)
 					if attribute.xml_var == id_var and path is not None:
 						# Add id_var suffix to current path
-						path = copy.copy(path)
 						path.suffix = "[@{}='{}']".format(id_var, attribute.get_value(obj))
-				except ParseError:
+				except ParseError, e:
 					raise
 				except Exception, e:
 					raise ParseError(e, attr_path)
 				unset_attributes.remove(xml_var)
 				info.attributes.remove(xml_var)
-		
-		print path
 		
 		# Parse unconsumed nodes
 		for child in copy.copy(info.children):
@@ -444,13 +454,8 @@ class Reflection(object):
 			element = self.element_map.get(tag)
 			if element is not None:
 				# Name will have been set
-				element_path = Path(element.xml_var, parent = path)
-				
+				element_path = get_element_path(element)
 				if element.is_aggregate:
-					# Add an index (allow this to be overriden)
-					values = obj.get_aggregate_list(element.xml_var)
-					index = 1 + len(values) # 1-based indexing for W3C XPath
-					element_path.suffix = "[{}]".format(index)
 					element.add_from_xml(obj, child, path = element_path)
 				else:
 					if tag in unset_scalars:
@@ -461,16 +466,26 @@ class Reflection(object):
 				info.children.remove(child)
 		
 		for attribute in map(self.attribute_map.get, unset_attributes):
+			try:
 				attribute.set_default(obj)
+			except ParseError:
+				raise
+			except Exception, e:
+				raise ParseError(e, get_attr_path(attribute.xml_var))
 			
 		for element in map(self.element_map.get, unset_scalars):
+			try:
 				element.set_default(obj)
+			except ParseError:
+				raise
+			except Exception, e:
+				raise ParseError(e, get_element_path(element))
 		
 		if is_final:
 			for xml_var in info.attributes:
-				on_error('Unknown attribute: {}'.format(xml_var))
+				on_error('Unknown attribute "{}" in {}'.format(xml_var, path))
 			for node in info.children:
-				on_error('Unknown tag: {}'.format(node.tag))
+				on_error('Unknown tag "{}" in {}'.format(node.tag, path))
 		# Allow children parsers to adopt this current path (if modified with id_var)
 		return path
 	
