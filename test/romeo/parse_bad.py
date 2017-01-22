@@ -5,13 +5,19 @@ import argparse
 
 from urdf_parser_py import urdf
 
+messages = []
+def add_message(message):
+    messages.append(message)
+urdf.xmlr.core.on_error = add_message
 
+messages = []
 xml_string = """
 <link name="b">
     <unknown_element/>
 </link>
 """
-# urdf.Link.from_xml_string(xml_string)
+urdf.Link.from_xml_string(xml_string)
+print messages
 
 xml_string = """
 <robot name="test">
@@ -20,7 +26,11 @@ xml_string = """
     </link>
 </robot>
 """
-# urdf.Robot.from_xml_string(xml_string)
+try:
+    urdf.Robot.from_xml_string(xml_string)
+except urdf.xmlr.core.ParseError, e:
+    print e
+    print e.path
 
 xml_string = """
 <robot name="test">
@@ -40,4 +50,8 @@ xml_string = """
   </transmission>
 </robot>
 """
-urdf.Robot.from_xml_string(xml_string)
+try:
+    urdf.Robot.from_xml_string(xml_string)
+except urdf.xmlr.core.ParseError, e:
+    print e
+    print e.path
