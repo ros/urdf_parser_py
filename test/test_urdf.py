@@ -5,9 +5,11 @@ import mock
 from xml.dom import minidom
 from xml_matching import xml_matches
 from urdf_parser_py import urdf
+import urdf_parser_py.xml_reflection as xmlr
 
-class ParseException(Exception):
-    pass
+class ParseException(xmlr.core.ParseError):
+    def __init__(self, e = "", path = ""):
+        super(ParseException, self).__init__(e, path)
 
 class TestURDFParser(unittest.TestCase):
     @mock.patch('urdf_parser_py.xml_reflection.on_error',

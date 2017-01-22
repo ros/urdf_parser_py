@@ -3,10 +3,6 @@ import yaml
 import collections
 from lxml import etree
 
-# Different implementations mix well it seems
-# @todo Do not use this?
-from xml.etree.ElementTree import ElementTree
-
 def xml_string(rootXml, addHeader = True):
     # Meh
     xmlString = etree.tostring(rootXml, pretty_print = True)
