@@ -87,19 +87,20 @@ def make_type(cur_type):
 		raise Exception("Invalid type: {}".format(cur_type))
 
 class Path(object):
-	def __init__(self, tag, parent = None, tree = None):
+	def __init__(self, tag, parent = None, suffix = "", tree = None):
 		self.parent = parent
 		self.tag = tag
+		self.suffix = suffix
 		self.tree = tree # For validating general path (getting true XML path)
 		
 	def __str__(self):
 		if self.parent is not None:
-			return "{}/{}".format(self.parent, self.tag)
+			return "{}/{}{}".format(self.parent, self.tag, self.suffix)
 		else:
 			if len(self.tag) > 0:
-				return "/{}".format(self.tag)
+				return "/{}{}".format(self.tag, self.suffix)
 			else:
-				return ""
+				return self.suffix
 
 class ParseError(Exception):
 	def __init__(self, e, path):
@@ -334,6 +335,12 @@ class AggregateElement(Element):
 		self.is_aggregate = True
 		
 	def add_from_xml(self, obj, node, path = None):
+		# Check if an index should be added
+		if len(path.suffix) == 0:
+			values = obj.get_aggregate_list(self.xml_var)
+			path = copy.copy(path)
+			index = 1 + len(values) # 1-based indexing
+			path.suffix = "[{}]".format(index)
 		value = self.value_type.from_xml(node, path = path)
 		obj.add_aggregate(self.xml_var, value)
 	
@@ -400,18 +407,6 @@ class Reflection(object):
 				self.scalars.append(element)
 				self.scalarNames.append(element.xml_var)
 	
-	def get_path_name(self, obj):
-		name_attr = self.attribute_map.get('name')
-		if name_attr is not None:
-			name = name_attr.get_value(obj)
-		else:
-			name = ''
-		if len(name) > 0:
-			path_name = '{}("{}")'.format(self.tag, name_attr.get_value(obj))
-		else:
-			path_name = self.tag
-		return path_name
-	
 	def set_from_xml(self, obj, node, info = None, path = None):
 		is_final = False
 		if info is None:
@@ -419,25 +414,31 @@ class Reflection(object):
 			info = Info(node)
 		
 		if self.parent:
-			self.parent.set_from_xml(obj, node, info, path) # Err... Not sure what to do here... Redirect path to this element?
+			path = self.parent.set_from_xml(obj, node, info, path)
 		
 		# Make this a map instead? Faster access? {name: isSet} ?
 		unset_attributes = list(self.attribute_map.keys())
 		unset_scalars = copy.copy(self.scalarNames)
 		
+		id_var = "name"
 		# Better method? Queues?
 		for xml_var in copy.copy(info.attributes):
 			attribute = self.attribute_map.get(xml_var)
 			if attribute is not None:
 				value = node.attrib[xml_var]
+				assert path is not None
+				attr_path = copy.copy(path)
+				attr_path.suffix += '[@{}]'.format(xml_var)
 				try:
 					attribute.set_from_string(obj, value)
+					if attribute.xml_var == id_var and path is not None:
+						# Add id_var suffix to current path
+						path = copy.copy(path)
+						path.suffix = "[@{}='{}']".format(id_var, attribute.get_value(obj))
 				except ParseError:
 					raise
 				except Exception, e:
-					# Recreate, just in case the name is created in the meantime
-					cur_path = Path(self.get_path_name(obj), parent = path)
-					raise ParseError(e, cur_path)
+					raise ParseError(e, attr_path)
 				unset_attributes.remove(xml_var)
 				info.attributes.remove(xml_var)
 		
@@ -447,16 +448,13 @@ class Reflection(object):
 			element = self.element_map.get(tag)
 			if element is not None:
 				# Name will have been set
-				cur_path = Path(self.get_path_name(obj), parent = path)
-				print cur_path
-				print "- {} -> {}".format(self, element)
-				print "- - {}".format(element.xml_var)
+				element_path = Path(element.xml_var, parent = path)
 				
 				if element.is_aggregate:
-					element.add_from_xml(obj, child, path = cur_path)
+					element.add_from_xml(obj, child, path = element_path)
 				else:
 					if tag in unset_scalars:
-						element.set_from_xml(obj, child, path = cur_path)
+						element.set_from_xml(obj, child, path = element_path)
 						unset_scalars.remove(tag)
 					else:
 						on_error("Scalar element defined multiple times: {}".format(tag))
@@ -473,6 +471,8 @@ class Reflection(object):
 				on_error('Unknown attribute: {}'.format(xml_var))
 			for node in info.children:
 				on_error('Unknown tag: {}'.format(node.tag))
+		# Allow children parsers to adopt this current path (if modified with id_var)
+		return path
 	
 	def add_to_xml(self, obj, node):
 		if self.parent:
@@ -533,7 +533,7 @@ class Object(YamlReflection):
 	@classmethod
 	def from_xml_string(cls, xml_string):
 		node = etree.fromstring(xml_string)
-		path = Path("", tree = etree.ElementTree(node))
+		path = Path(cls.XML_REFL.tag, tree = etree.ElementTree(node))
 		return cls.from_xml(node, path = path)
 	
 	@classmethod
