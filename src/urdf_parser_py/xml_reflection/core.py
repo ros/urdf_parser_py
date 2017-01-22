@@ -19,9 +19,10 @@ def reflect(cls, *args, **kwargs):
 # When dumping to yaml, include tag name?
 
 # How to incorporate line number and all that jazz?
-def on_error(message):
+def on_error_stderr(message):
 	""" What to do on an error. This can be changed to raise an exception. """
 	sys.stderr.write(message + '\n')
+on_error = on_error_stderr
 
 skip_default = True
 #defaultIfMatching = True # Not implemeneted yet
@@ -419,7 +420,7 @@ class Reflection(object):
 		
 		def get_attr_path(attribute):
 			attr_path = copy.copy(path)
-			attr_path.suffix += '[@{}]'.format(attribute)
+			attr_path.suffix += '[@{}]'.format(attribute.xml_var)
 			return attr_path
 		def get_element_path(element):
 			element_path = Path(element.xml_var, parent = path)
@@ -466,13 +467,17 @@ class Reflection(object):
 						on_error("Scalar element defined multiple times: {}".format(tag))
 				info.children.remove(child)
 		
+		# For unset attributes and scalar elements, we should not pass the attribute
+		# or element path, as those paths will implicitly not exist.
+		# If we do supply it, then the user would need to manually prune the XPath to try
+		# and find where the problematic parent element.
 		for attribute in map(self.attribute_map.get, unset_attributes):
 			try:
 				attribute.set_default(obj)
 			except ParseError:
 				raise
 			except Exception, e:
-				raise ParseError(e, get_attr_path(attribute.xml_var))
+				raise ParseError(e, path) # get_attr_path(attribute.xml_var))
 			
 		for element in map(self.element_map.get, unset_scalars):
 			try:
@@ -480,7 +485,7 @@ class Reflection(object):
 			except ParseError:
 				raise
 			except Exception, e:
-				raise ParseError(e, get_element_path(element))
+				raise ParseError(e, path) # get_element_path(element))
 		
 		if is_final:
 			for xml_var in info.attributes:

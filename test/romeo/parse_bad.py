@@ -10,6 +10,18 @@ def add_message(message):
     messages.append(message)
 urdf.xmlr.core.on_error = add_message
 
+xml_string = """
+<robot name="test">
+  <transmission name_BAD="bad_trans"/>
+</robot>
+"""
+messages = []
+try:
+    urdf.Robot.from_xml_string(xml_string)
+except urdf.xmlr.core.ParseError, e:
+    print e
+    print e.path
+    
 messages = []
 xml_string = """
 <link name="b">
@@ -19,9 +31,16 @@ xml_string = """
 urdf.Link.from_xml_string(xml_string)
 print messages
 
+xml_string = '''<?xml version="1.0"?>
+<link name="b" unknown_tag="something"/>'''
+messages = []
+urdf.Link.from_xml_string(xml_string)
+print messages
+
 xml_string = """
 <robot name="test">
-    <link na_me="b">
+    <link name="good"/>
+    <link na_me="bad">
         <unknown_element/>
     </link>
 </robot>
