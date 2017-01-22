@@ -88,7 +88,7 @@ def make_type(cur_type):
 
 class ValueType(object):
 	""" Primitive value type """
-	def from_xml(self, node):
+	def from_xml(self, node, tree = None):
 		return self.from_string(node.text)
 	
 	def write_xml(self, node, value):
@@ -136,7 +136,7 @@ class VectorType(ListType):
 
 class RawType(ValueType):
 	""" Simple, raw XML value. Need to bugfix putting this back into a document """
-	def from_xml(self, node):
+	def from_xml(self, node, tree = None):
 		return node
 	
 	def write_xml(self, node, value):
@@ -155,7 +155,7 @@ class SimpleElementType(ValueType):
 	def __init__(self, attribute, value_type):
 		self.attribute = attribute
 		self.value_type = get_type(value_type)
-	def from_xml(self, node):
+	def from_xml(self, node, tree = None):
 		text = node.get(self.attribute)
 		return self.value_type.from_string(text)
 	def write_xml(self, node, value):
@@ -166,9 +166,9 @@ class ObjectType(ValueType):
 	def __init__(self, cur_type):
 		self.type = cur_type
 		
-	def from_xml(self, node):
+	def from_xml(self, node, tree = None):
 		obj = self.type()
-		obj.read_xml(node)
+		obj.read_xml(node, tree = tree)
 		return obj
 	
 	def write_xml(self, node, obj):
@@ -183,12 +183,12 @@ class FactoryType(ValueType):
 			# Reverse lookup
 			self.nameMap[value] = key
 	
-	def from_xml(self, node):
+	def from_xml(self, node, tree = None):
 		cur_type = self.typeMap.get(node.tag)
 		if cur_type is None:
 			raise Exception("Invalid {} tag: {}".format(self.name, node.tag))
 		value_type = get_type(cur_type)
-		return value_type.from_xml(node)
+		return value_type.from_xml(node, tree = tree)
 	
 	def get_name(self, obj):
 		cur_type = type(obj)
@@ -206,11 +206,11 @@ class DuckTypedFactory(ValueType):
 		assert len(typeOrder) > 0
 		self.type_order = typeOrder
 	
-	def from_xml(self, node):
+	def from_xml(self, node, tree = None):
 		error_set = []
 		for value_type in self.type_order:
 			try:
-				return value_type.from_xml(node)
+				return value_type.from_xml(node, tree = tree)
 			except Exception as e:
 				error_set.append((value_type, e))
 		# Should have returned, we encountered errors
@@ -279,8 +279,8 @@ class Element(Param):
 		self.type = 'element'
 		self.is_raw = is_raw
 		
-	def set_from_xml(self, obj, node):
-		value = self.value_type.from_xml(node)
+	def set_from_xml(self, obj, node, tree = None):
+		value = self.value_type.from_xml(node, tree = tree )
 		setattr(obj, self.var, value)
 	
 	def add_to_xml(self, obj, parent):
@@ -308,8 +308,8 @@ class AggregateElement(Element):
 		Element.__init__(self, xml_var, value_type, required = False, var = var, is_raw = is_raw)
 		self.is_aggregate = True
 		
-	def add_from_xml(self, obj, node):
-		value = self.value_type.from_xml(node)
+	def add_from_xml(self, obj, node, tree = None):
+		value = self.value_type.from_xml(node, tree = tree)
 		obj.add_aggregate(self.xml_var, value)
 	
 	def set_default(self):
@@ -375,14 +375,18 @@ class Reflection(object):
 				self.scalars.append(element)
 				self.scalarNames.append(element.xml_var)
 	
-	def set_from_xml(self, obj, node, info = None):
+	def set_from_xml(self, obj, node, info = None, tree = None):
 		is_final = False
 		if info is None:
 			is_final = True
 			info = Info(node)
 		
+		path = "/?"
 		if self.parent:
-			self.parent.set_from_xml(obj, node, info)
+			self.parent.set_from_xml(obj, node, info, tree)
+		else:
+			if tree is not None:
+				path = tree.getpath(node)
 		
 		# Make this a map instead? Faster access? {name: isSet} ?
 		unset_attributes = list(self.attribute_map.keys())
@@ -393,6 +397,7 @@ class Reflection(object):
 			attribute = self.attribute_map.get(xml_var)
 			if attribute is not None:
 				value = node.attrib[xml_var]
+				print '{}[""]'.format(path, xml_var)
 				attribute.set_from_string(obj, value)
 				unset_attributes.remove(xml_var)
 				info.attributes.remove(xml_var)
@@ -403,10 +408,10 @@ class Reflection(object):
 			element = self.element_map.get(tag)
 			if element is not None:
 				if element.is_aggregate:
-					element.add_from_xml(obj, child)
+					element.add_from_xml(obj, child, tree = tree)
 				else:
 					if tag in unset_scalars:
-						element.set_from_xml(obj, child)
+						element.set_from_xml(obj, child, tree = tree)
 						unset_scalars.remove(tag)
 					else:
 						on_error("Scalar element defined multiple times: {}".format(tag))
@@ -470,20 +475,20 @@ class Object(YamlReflection):
 	def post_read_xml(self):
 		pass
 	
-	def read_xml(self, node):
-		self.XML_REFL.set_from_xml(self, node)
+	def read_xml(self, node, tree = None):
+		self.XML_REFL.set_from_xml(self, node, tree = tree)
 		self.post_read_xml()
 		self.check_valid()
 		
 	@classmethod
-	def from_xml(cls, node):
+	def from_xml(cls, node, tree = None):
 		cur_type = get_type(cls)
-		return cur_type.from_xml(node)
+		return cur_type.from_xml(node, tree = tree)
 	
 	@classmethod
 	def from_xml_string(cls, xml_string):
 		node = etree.fromstring(xml_string)
-		return cls.from_xml(node)
+		return cls.from_xml(node, tree = etree.ElementTree(node))
 	
 	@classmethod
 	def from_xml_file(cls, file_path):
