@@ -266,7 +266,7 @@ class Param(object):
 		self.required = required
 		self.is_aggregate = False
 	
-	def set_default(self):
+	def set_default(self, obj):
 		if self.required:
 			raise Exception("Required {} not set in XML: {}".format(self.type, self.xml_var))
 		elif not skip_default:
@@ -338,7 +338,7 @@ class AggregateElement(Element):
 		value = self.value_type.from_xml(node, path = path)
 		obj.add_aggregate(self.xml_var, value)
 	
-	def set_default(self):
+	def set_default(self, obj):
 		pass
 	
 
@@ -461,10 +461,10 @@ class Reflection(object):
 				info.children.remove(child)
 		
 		for attribute in map(self.attribute_map.get, unset_attributes):
-			attribute.set_default()
+				attribute.set_default(obj)
 			
 		for element in map(self.element_map.get, unset_scalars):
-			element.set_default()
+				element.set_default(obj)
 		
 		if is_final:
 			for xml_var in info.attributes:
