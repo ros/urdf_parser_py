@@ -13,4 +13,5 @@ catkin_install_python(PROGRAMS
 
 if (CATKIN_ENABLE_TESTING)
   catkin_add_nosetests(test/test_urdf.py)
+  catkin_add_nosetests(test/test_urdf_error.py)
 endif()

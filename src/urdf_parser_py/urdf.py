@@ -36,7 +36,7 @@ class Pose(xmlr.Object):
     def position(self, value): self.xyz = value
 
 
-xmlr.reflect(Pose, params=[
+xmlr.reflect(Pose, tag='origin', params=[
     xmlr.Attribute('xyz', 'vector3', False, default=[0, 0, 0]),
     xmlr.Attribute('rpy', 'vector3', False, default=[0, 0, 0])
 ])
@@ -64,7 +64,7 @@ class Color(xmlr.Object):
                 raise Exception('Invalid color argument count')
 
 
-xmlr.reflect(Color, params=[
+xmlr.reflect(Color, tag='color', params=[
     xmlr.Attribute('rgba', 'vector4')
 ])
 
@@ -75,7 +75,7 @@ class JointDynamics(xmlr.Object):
         self.friction = friction
 
 
-xmlr.reflect(JointDynamics, params=[
+xmlr.reflect(JointDynamics, tag='dynamics', params=[
     xmlr.Attribute('damping', float, False),
     xmlr.Attribute('friction', float, False)
 ])
@@ -86,7 +86,7 @@ class Box(xmlr.Object):
         self.size = size
 
 
-xmlr.reflect(Box, params=[
+xmlr.reflect(Box, tag='box', params=[
     xmlr.Attribute('size', 'vector3')
 ])
 
@@ -97,7 +97,7 @@ class Cylinder(xmlr.Object):
         self.length = length
 
 
-xmlr.reflect(Cylinder, params=[
+xmlr.reflect(Cylinder, tag='cylinder', params=[
     xmlr.Attribute('radius', float),
     xmlr.Attribute('length', float)
 ])
@@ -108,7 +108,7 @@ class Sphere(xmlr.Object):
         self.radius = radius
 
 
-xmlr.reflect(Sphere, params=[
+xmlr.reflect(Sphere, tag='sphere', params=[
     xmlr.Attribute('radius', float)
 ])
 
@@ -119,7 +119,7 @@ class Mesh(xmlr.Object):
         self.scale = scale
 
 
-xmlr.reflect(Mesh, params=[
+xmlr.reflect(Mesh, tag='mesh', params=[
     xmlr.Attribute('filename', str),
     xmlr.Attribute('scale', 'vector3', required=False)
 ])
@@ -134,10 +134,10 @@ class GeometricType(xmlr.ValueType):
             'mesh': Mesh
         })
 
-    def from_xml(self, node):
+    def from_xml(self, node, path):
         children = xml_children(node)
         assert len(children) == 1, 'One element only for geometric'
-        return self.factory.from_xml(children[0])
+        return self.factory.from_xml(children[0], path=path)
 
     def write_xml(self, node, obj):
         name = self.factory.get_name(obj)
@@ -154,7 +154,7 @@ class Collision(xmlr.Object):
         self.origin = origin
 
 
-xmlr.reflect(Collision, params=[
+xmlr.reflect(Collision, tag='collision', params=[
     origin_element,
     xmlr.Element('geometry', 'geometric')
 ])
@@ -165,7 +165,7 @@ class Texture(xmlr.Object):
         self.filename = filename
 
 
-xmlr.reflect(Texture, params=[
+xmlr.reflect(Texture, tag='texture', params=[
     xmlr.Attribute('filename', str)
 ])
 
@@ -181,7 +181,7 @@ class Material(xmlr.Object):
             xmlr.on_error("Material has neither a color nor texture.")
 
 
-xmlr.reflect(Material, params=[
+xmlr.reflect(Material, tag='material', params=[
     name_attribute,
     xmlr.Element('color', Color, False),
     xmlr.Element('texture', Texture, False)
@@ -200,7 +200,7 @@ class Visual(xmlr.Object):
         self.origin = origin
 
 
-xmlr.reflect(Visual, params=[
+xmlr.reflect(Visual, tag='visual', params=[
     origin_element,
     xmlr.Element('geometry', 'geometric'),
     xmlr.Element('material', LinkMaterial, False)
@@ -225,7 +225,7 @@ class Inertia(xmlr.Object):
             [self.ixz, self.iyz, self.izz]]
 
 
-xmlr.reflect(Inertia,
+xmlr.reflect(Inertia, tag='inertia',
              params=[xmlr.Attribute(key, float) for key in Inertia.KEYS])
 
 
@@ -236,7 +236,7 @@ class Inertial(xmlr.Object):
         self.origin = origin
 
 
-xmlr.reflect(Inertial, params=[
+xmlr.reflect(Inertial, tag='inertial', params=[
     origin_element,
     xmlr.Element('mass', 'element_value'),
     xmlr.Element('inertia', Inertia, False)
@@ -250,7 +250,7 @@ class JointCalibration(xmlr.Object):
         self.falling = falling
 
 
-xmlr.reflect(JointCalibration, params=[
+xmlr.reflect(JointCalibration, tag='calibration', params=[
     xmlr.Attribute('rising', float, False, 0),
     xmlr.Attribute('falling', float, False, 0)
 ])
@@ -264,7 +264,7 @@ class JointLimit(xmlr.Object):
         self.upper = upper
 
 
-xmlr.reflect(JointLimit, params=[
+xmlr.reflect(JointLimit, tag='limit', params=[
     xmlr.Attribute('effort', float),
     xmlr.Attribute('lower', float, False, 0),
     xmlr.Attribute('upper', float, False, 0),
@@ -281,7 +281,7 @@ class JointMimic(xmlr.Object):
         self.offset = offset
 
 
-xmlr.reflect(JointMimic, params=[
+xmlr.reflect(JointMimic, tag='mimic', params=[
     xmlr.Attribute('joint', str),
     xmlr.Attribute('multiplier', float, False),
     xmlr.Attribute('offset', float, False)
@@ -296,7 +296,7 @@ class SafetyController(xmlr.Object):
         self.soft_upper_limit = upper
 
 
-xmlr.reflect(SafetyController, params=[
+xmlr.reflect(SafetyController, tag='safety_controller', params=[
     xmlr.Attribute('k_velocity', float),
     xmlr.Attribute('k_position', float, False, 0),
     xmlr.Attribute('soft_lower_limit', float, False, 0),
@@ -334,7 +334,7 @@ class Joint(xmlr.Object):
     @joint_type.setter
     def joint_type(self, value): self.type = value
 
-xmlr.reflect(Joint, params=[
+xmlr.reflect(Joint, tag='joint', params=[
     name_attribute,
     xmlr.Attribute('type', str),
     origin_element,
@@ -358,7 +358,7 @@ class Link(xmlr.Object):
         self.collision = collision
         self.origin = origin
 
-xmlr.reflect(Link, params=[
+xmlr.reflect(Link, tag='link', params=[
     name_attribute,
     origin_element,
     xmlr.Element('inertial', Inertial, False),
