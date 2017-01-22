@@ -16,3 +16,7 @@ enable_testing()
 add_test(NAME urdf_parser_py
          COMMAND /usr/bin/env PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/src ${PYTHON} test_urdf.py
          WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/test)
+
+add_test(NAME urdf_parser_py_error
+         COMMAND /usr/bin/env PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/src ${PYTHON} test_urdf_error.py
+         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/test)
