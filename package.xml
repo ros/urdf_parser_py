@@ -3,8 +3,6 @@
   <name>urdfdom_py</name>
   <version>0.3.2</version>
   <description>Python implementation of the URDF parser.</description>
-  <maintainer email="isucan@google.com">Ioan Sucan</maintainer>
-  <maintainer email="jacquelinekay1@gmail.com">Jackie Kay</maintainer>
 
   <license>BSD</license>
 
@@ -13,6 +11,11 @@
   <author>Kelsey Hawkins</author>
   <author>Antonio El Khoury</author>
   <author>Eric Cousineau</author>
+  <author email="isucan@gmail.com">Ioan Sucan</author>
+  <author email="jacquelinekay1@gmail.com">Jackie Kay</author>
+
+  <maintainer email="clalancette@osrfoundation.org">Chris Lalancette</maintainer>
+  <maintainer email="sloretz@osrfoundation.org">Shane Loretz</maintainer>
 
   <url type="website">http://wiki.ros.org/urdf_parser_py</url>
   <url type="bugtracker">https://github.com/ros/urdf_parser_py/issues</url>
