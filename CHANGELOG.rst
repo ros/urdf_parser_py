@@ -2,6 +2,14 @@
 Changelog for package urdfdom_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Made Chris and Shane the maintainers
+* Added python-lxml to the travis build.
+* Reverted line break (`ros/urdfdom#77 <https://github.com/ros/urdfdom/pull/77>`_) now that there is a more generic solution. (`#5 <https://github.com/ros/urdf_parser_py/issues/5>`_)
+* Added line break to make errors easier to read. (`#4 <https://github.com/ros/urdf_parser_py/issues/4>`_)
+* Contributors: Chris Lalancette, Isaac I.Y. Saito
+
 0.3.1 (2016-02-22)
 ------------------
 * Add travis
