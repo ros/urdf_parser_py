@@ -1,12 +1,6 @@
 cmake_minimum_required( VERSION 2.8 FATAL_ERROR )
 project(urdfdom_py)
 
-find_program(PYTHON "python")
-
-if (NOT PYTHON)
-  return()
-endif()
-
 find_package(catkin REQUIRED)
 catkin_python_setup()
 catkin_package()
