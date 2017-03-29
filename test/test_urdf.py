@@ -2,6 +2,13 @@ from __future__ import print_function
 
 import unittest
 import mock
+import os
+import sys
+
+# Add path to import xml_matching
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
+
 from xml.dom import minidom
 from xml_matching import xml_matches
 from urdf_parser_py import urdf
