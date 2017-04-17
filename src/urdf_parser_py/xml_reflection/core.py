@@ -23,7 +23,7 @@ def on_error(message):
 	""" What to do on an error. This can be changed to raise an exception. """
 	sys.stderr.write(message + '\n')
 
-skip_default = True
+skip_default = False
 #defaultIfMatching = True # Not implemeneted yet
 
 # Registering Types
@@ -243,7 +243,7 @@ class Param(object):
 		self.required = required
 		self.is_aggregate = False
 	
-	def set_default(self):
+	def set_default(self, obj):
 		if self.required:
 			raise Exception("Required {} not set in XML: {}".format(self.type, self.xml_var))
 		elif not skip_default:
@@ -312,7 +312,7 @@ class AggregateElement(Element):
 		value = self.value_type.from_xml(node)
 		obj.add_aggregate(self.xml_var, value)
 	
-	def set_default(self):
+	def set_default(self, obj):
 		pass
 	
 
@@ -387,7 +387,6 @@ class Reflection(object):
 		# Make this a map instead? Faster access? {name: isSet} ?
 		unset_attributes = list(self.attribute_map.keys())
 		unset_scalars = copy.copy(self.scalarNames)
-		
 		# Better method? Queues?
 		for xml_var in copy.copy(info.attributes):
 			attribute = self.attribute_map.get(xml_var)
@@ -413,10 +412,10 @@ class Reflection(object):
 				info.children.remove(child)
 		
 		for attribute in map(self.attribute_map.get, unset_attributes):
-			attribute.set_default()
+			attribute.set_default(obj)
 			
 		for element in map(self.element_map.get, unset_scalars):
-			element.set_default()
+			element.set_default(obj)
 		
 		if is_final:
 			for xml_var in info.attributes:

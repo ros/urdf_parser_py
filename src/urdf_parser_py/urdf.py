@@ -17,8 +17,9 @@ class Pose(xmlr.Object):
 		self.xyz = xyz
 		self.rpy = rpy
 	
-	def check_valid(self):
-		assert self.xyz is not None or self.rpy is not None
+	def check_valid(self):	    
+		assert self.xyz is None or len(self.xyz) == 3 and\
+         	   self.rpy is None or len(self.rpy) == 3
 	
 	# Aliases for backwards compatibility
 	@property
@@ -31,8 +32,8 @@ class Pose(xmlr.Object):
 	def position(self, value): self.xyz = value
 
 xmlr.reflect(Pose, params = [
-	xmlr.Attribute('xyz', 'vector3', False),
-	xmlr.Attribute('rpy', 'vector3', False)
+	xmlr.Attribute('xyz', 'vector3', False, default=[0, 0, 0]),
+	xmlr.Attribute('rpy', 'vector3', False, default=[0, 0, 0])
 	])
 
 

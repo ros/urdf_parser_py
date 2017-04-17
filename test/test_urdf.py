@@ -141,5 +141,42 @@ class TestURDFParser(unittest.TestCase):
         self.assertRaises(ParseException, self.parse, xml)
 
 
+class LinkOriginTestCase(unittest.TestCase):
+    @mock.patch('urdf_parser_py.xml_reflection.on_error',
+                mock.Mock(side_effect=ParseException))
+    def parse(self, xml):
+        return urdf.Robot.from_xml_string(xml)
+
+    def test_robot_link_defaults(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test">
+  <link name="test_link">
+    <inertial>
+      <mass value="10.0"/>
+      <origin/>
+    </inertial>
+  </link>
+</robot>'''
+        robot = self.parse(xml)
+        origin = robot.links[0].inertial.origin
+        self.assertEquals(origin.xyz, [0, 0, 0])
+        self.assertEquals(origin.rpy, [0, 0, 0])
+
+    def test_robot_link_defaults_xyz_set(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test">
+  <link name="test_link">
+    <inertial>
+      <mass value="10.0"/>
+      <origin xyz="1 2 3"/>
+    </inertial>
+  </link>
+</robot>'''
+        robot = self.parse(xml)
+        origin = robot.links[0].inertial.origin
+        self.assertEquals(origin.xyz, [1, 2, 3])
+        self.assertEquals(origin.rpy, [0 ,0, 0])
+    
+
 if __name__ == '__main__':
     unittest.main()
