@@ -18,8 +18,8 @@ class Pose(xmlr.Object):
 		self.rpy = rpy
 
 	def check_valid(self):
-		assert self.xyz is None or len(self.xyz) == 3 and\
-		self.rpy is None or len(self.rpy) == 3
+		assert self.xyz is None or len(self.xyz) == 3 and \
+			self.rpy is None or len(self.rpy) == 3
 
 	# Aliases for backwards compatibility
 	@property
