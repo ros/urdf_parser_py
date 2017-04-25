@@ -16,11 +16,11 @@ class Pose(xmlr.Object):
 	def __init__(self, xyz=None, rpy=None):
 		self.xyz = xyz
 		self.rpy = rpy
-	
-	def check_valid(self):	    
+
+	def check_valid(self):
 		assert self.xyz is None or len(self.xyz) == 3 and\
-         	   self.rpy is None or len(self.rpy) == 3
-	
+		self.rpy is None or len(self.rpy) == 3
+
 	# Aliases for backwards compatibility
 	@property
 	def rotation(self): return self.rpy
