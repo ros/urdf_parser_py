@@ -463,8 +463,8 @@ class Object(YamlReflection):
 		self.write_xml(doc)
 		return doc
 	
-	def to_xml_string(self):
-		return xml_string(self.to_xml())
+	def to_xml_string(self, addHeader = True):
+		return xml_string(self.to_xml(), addHeader)
 	
 	def post_read_xml(self):
 		pass
