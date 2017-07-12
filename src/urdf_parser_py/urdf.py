@@ -301,7 +301,7 @@ class Joint(xmlr.Object):
 	@joint_type.setter
 	def joint_type(self, value): self.type = value
 
-xmlr.reflect(Joint, tag = 'joint', params = [
+xmlr.reflect(Joint, tag='joint', params=[
 	name_attribute,
 	xmlr.Attribute('type', str),
 	origin_element,
@@ -324,7 +324,7 @@ class Link(xmlr.Object):
 		self.collision = collision
 		self.origin = origin
 
-xmlr.reflect(Link, tag = 'link', params = [
+xmlr.reflect(Link, tag='link', params=[
 	name_attribute,
 	origin_element,
 	xmlr.Element('inertial', Inertial, False),
