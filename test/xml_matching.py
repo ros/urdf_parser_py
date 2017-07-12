@@ -5,26 +5,27 @@ import sys
 # regex to match whitespace
 whitespace = re.compile(r'\s+')
 
+
 def all_attributes_match(a, b):
     if len(a.attributes) != len(b.attributes):
         print("Different number of attributes")
         return False
-    a_atts = [(a.attributes.item(i).name, a.attributes.item(i).value) for i in range(len(a.attributes))]
-    b_atts = [(b.attributes.item(i).name, b.attributes.item(i).value) for i in range(len(b.attributes))]
+    a_atts = [(a.attributes.item(i).name, a.attributes.item(i).value) for i in range(len(a.attributes))]  # noqa
+    b_atts = [(b.attributes.item(i).name, b.attributes.item(i).value) for i in range(len(b.attributes))]  # noqa
     a_atts.sort()
     b_atts.sort()
 
     for i in range(len(a_atts)):
         if a_atts[i][0] != b_atts[i][0]:
-            print("Different attribute names: %s and %s" % (a_atts[i][0], b_atts[i][0]))
+            print("Different attribute names: %s and %s" % (a_atts[i][0], b_atts[i][0]))  # noqa
             return False
         try:
             if abs(float(a_atts[i][1]) - float(b_atts[i][1])) > 1.0e-9:
-                print("Different attribute values: %s and %s" % (a_atts[i][1], b_atts[i][1]))
+                print("Different attribute values: %s and %s" % (a_atts[i][1], b_atts[i][1]))  # noqa
                 return False
         except ValueError:  # Attribute values aren't numeric
             if a_atts[i][1] != b_atts[i][1]:
-                print("Different attribute values: %s and %s" % (a_atts[i][1], b_atts[i][1]))
+                print("Different attribute values: %s and %s" % (a_atts[i][1], b_atts[i][1]))  # noqa
                 return False
 
     return True
@@ -33,7 +34,8 @@ def all_attributes_match(a, b):
 def text_matches(a, b):
     a_norm = whitespace.sub(' ', a)
     b_norm = whitespace.sub(' ', b)
-    if a_norm.strip() == b_norm.strip(): return True
+    if a_norm.strip() == b_norm.strip():
+        return True
     print("Different text values: '%s' and '%s'" % (a, b))
     return False
 
@@ -73,27 +75,31 @@ def nodes_match(a, b, ignore_nodes):
         # we could have several text nodes in a row, due to replacements
         while (a and
                ((a.nodeType in ignore_nodes) or
-                (a.nodeType == xml.dom.Node.TEXT_NODE and whitespace.sub('', a.data) == ""))):
+                (a.nodeType == xml.dom.Node.TEXT_NODE and whitespace.sub('', a.data) == ""))):  # noqa
             a = a.nextSibling
         while (b and
                ((b.nodeType in ignore_nodes) or
-                (b.nodeType == xml.dom.Node.TEXT_NODE and whitespace.sub('', b.data) == ""))):
+                (b.nodeType == xml.dom.Node.TEXT_NODE and whitespace.sub('', b.data) == ""))):  # noqa
             b = b.nextSibling
 
         if not nodes_match(a, b, ignore_nodes):
             return False
 
-        if a: a = a.nextSibling
-        if b: b = b.nextSibling
+        if a:
+            a = a.nextSibling
+        if b:
+            b = b.nextSibling
 
     return True
 
 
 def xml_matches(a, b, ignore_nodes=[]):
     if isinstance(a, str):
-        return xml_matches(xml.dom.minidom.parseString(a).documentElement, b, ignore_nodes)
+        return xml_matches(xml.dom.minidom.parseString(a).documentElement, b,
+                           ignore_nodes)
     if isinstance(b, str):
-        return xml_matches(a, xml.dom.minidom.parseString(b).documentElement, ignore_nodes)
+        return xml_matches(a, xml.dom.minidom.parseString(b).documentElement,
+                           ignore_nodes)
     if a.nodeType == xml.dom.Node.DOCUMENT_NODE:
         return xml_matches(a.documentElement, b, ignore_nodes)
     if b.nodeType == xml.dom.Node.DOCUMENT_NODE:

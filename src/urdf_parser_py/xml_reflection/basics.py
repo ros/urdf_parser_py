@@ -7,15 +7,18 @@ from lxml import etree
 # @todo Do not use this?
 from xml.etree.ElementTree import ElementTree
 
-def xml_string(rootXml, addHeader = True):
+
+def xml_string(rootXml, addHeader=True):
     # Meh
-    xmlString = etree.tostring(rootXml, pretty_print = True)
+    xmlString = etree.tostring(rootXml, pretty_print=True)
     if addHeader:
         xmlString = '<?xml version="1.0"?>\n' + xmlString
     return xmlString
 
+
 def dict_sub(obj, keys):
     return dict((key, obj[key]) for key in keys)
+
 
 def node_add(doc, sub):
     if sub is None:
@@ -23,19 +26,23 @@ def node_add(doc, sub):
     if type(sub) == str:
         return etree.SubElement(doc, sub)
     elif isinstance(sub, etree._Element):
-        doc.append(sub) # This screws up the rest of the tree for prettyprint...
+        doc.append(sub)  # This screws up the rest of the tree for prettyprint
         return sub
     else:
         raise Exception('Invalid sub value')
 
+
 def pfloat(x):
-    return str(x).rstrip('.') 
+    return str(x).rstrip('.')
+
 
 def xml_children(node):
     children = node.getchildren()
+
     def predicate(node):
         return not isinstance(node, etree._Comment)
     return list(filter(predicate, children))
+
 
 def isstring(obj):
     try:
@@ -43,9 +50,11 @@ def isstring(obj):
     except NameError:
         return isinstance(obj, str)
 
+
 def to_yaml(obj):
     """ Simplify yaml representation for pretty printing """
-    # Is there a better way to do this by adding a representation with yaml.Dumper?
+    # Is there a better way to do this by adding a representation with
+    # yaml.Dumper?
     # Ordered dict: http://pyyaml.org/ticket/29#comment:11
     if obj is None or isstring(obj):
         out = str(obj)
@@ -54,7 +63,7 @@ def to_yaml(obj):
     elif hasattr(obj, 'to_yaml'):
         out = obj.to_yaml()
     elif isinstance(obj, etree._Element):
-    	out = etree.tostring(obj, pretty_print = True)
+        out = etree.tostring(obj, pretty_print=True)
     elif type(obj) == dict:
         out = {}
         for (var, value) in obj.items():
@@ -68,14 +77,17 @@ def to_yaml(obj):
         out = str(obj)
     return out
 
+
 class SelectiveReflection(object):
-	def get_refl_vars(self):
-		return list(vars(self).keys())
+    def get_refl_vars(self):
+        return list(vars(self).keys())
+
 
 class YamlReflection(SelectiveReflection):
-	def to_yaml(self):
-		raw = dict((var, getattr(self, var)) for var in self.get_refl_vars())
-		return to_yaml(raw)
-		
-	def __str__(self):
-		return yaml.dump(self.to_yaml()).rstrip() # Good idea? Will it remove other important things?
+    def to_yaml(self):
+        raw = dict((var, getattr(self, var)) for var in self.get_refl_vars())
+        return to_yaml(raw)
+
+    def __str__(self):
+        # Good idea? Will it remove other important things?
+        return yaml.dump(self.to_yaml()).rstrip()
