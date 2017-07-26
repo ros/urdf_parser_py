@@ -7,14 +7,17 @@ import sys
 
 # Add path to import xml_matching
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                             '../src')))
 
-from xml.dom import minidom
-from xml_matching import xml_matches
-from urdf_parser_py import urdf
+from xml.dom import minidom  # noqa
+from xml_matching import xml_matches  # noqa
+from urdf_parser_py import urdf  # noqa
+
 
 class ParseException(Exception):
     pass
+
 
 class TestURDFParser(unittest.TestCase):
     @mock.patch('urdf_parser_py.xml_reflection.on_error',
@@ -175,8 +178,8 @@ class LinkOriginTestCase(unittest.TestCase):
         robot = self.parse(xml)
         origin = robot.links[0].inertial.origin
         self.assertEquals(origin.xyz, [1, 2, 3])
-        self.assertEquals(origin.rpy, [0 ,0, 0])
-    
+        self.assertEquals(origin.rpy, [0, 0, 0])
+
 
 if __name__ == '__main__':
     unittest.main()
