@@ -355,7 +355,7 @@ class Link(xmlr.Object):
         self.aggregate_init()
         self.name = name
         self.visuals = []
-        self.inertials = inertial
+        self.inertial = inertial
         self.collisions = []
         self.origin = origin
 
