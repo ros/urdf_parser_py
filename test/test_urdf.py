@@ -13,10 +13,11 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
 from xml.dom import minidom  # noqa
 from xml_matching import xml_matches  # noqa
 from urdf_parser_py import urdf  # noqa
+import urdf_parser_py.xml_reflection as xmlr
 
-
-class ParseException(Exception):
-    pass
+class ParseException(xmlr.core.ParseError):
+    def __init__(self, e = "", path = ""):
+        super(ParseException, self).__init__(e, path)
 
 
 class TestURDFParser(unittest.TestCase):
