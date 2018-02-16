@@ -220,5 +220,61 @@ class LinkOriginTestCase(unittest.TestCase):
         self.assertEquals(origin.rpy, [0, 0, 0])
 
 
+class LinkMultiVisualsAndCollisionsTest(unittest.TestCase):
+
+    xml = '''<?xml version="1.0"?>
+<robot name="test">
+  <link name="link">
+    <visual>
+      <geometry>
+        <cylinder length="1" radius="1"/>
+      </geometry>
+      <material name="mat"/>
+    </visual>
+    <visual>
+      <geometry>
+        <cylinder length="4" radius="0.5"/>
+      </geometry>
+      <material name="mat2"/>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder length="1" radius="1"/>
+      </geometry>
+    </collision>
+    <collision>
+      <geometry>
+        <cylinder length="4" radius="0.5"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="link2"/>
+</robot>'''
+
+    def test_multi_visual_access(self):
+        robot = urdf.Robot.from_xml_string(self.xml)
+        self.assertEquals(2, len(robot.links[0].visuals))
+        self.assertEqual(
+            id(robot.links[0].visuals[0]), id(robot.links[0].visual))
+
+        self.assertEquals(None, robot.links[1].visual)
+
+        dummyObject = set()
+        robot.links[0].visual = dummyObject
+        self.assertEquals(id(dummyObject), id(robot.links[0].visuals[0]))
+
+    def test_multi_collision_access(self):
+        robot = urdf.Robot.from_xml_string(self.xml)
+        self.assertEquals(2, len(robot.links[0].collisions))
+        self.assertEqual(
+            id(robot.links[0].collisions[0]), id(robot.links[0].collision))
+
+        self.assertEquals(None, robot.links[1].collision)
+
+        dummyObject = set()
+        robot.links[0].collision = dummyObject
+        self.assertEquals(id(dummyObject), id(robot.links[0].collisions[0]))
+
+
 if __name__ == '__main__':
     unittest.main()
