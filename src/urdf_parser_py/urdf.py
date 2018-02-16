@@ -359,6 +359,35 @@ class Link(xmlr.Object):
         self.collisions = []
         self.origin = origin
 
+    def __get_visual(self):
+        """Return the first visual or None."""
+        if self.visuals:
+            return self.visuals[0]
+
+    def __set_visual(self, visual):
+        """Set the first visual."""
+        if self.visuals:
+            self.visuals[0] = visual
+        else:
+            self.visuals.append(visual)
+
+    def __get_collision(self):
+        """Return the first collision or None."""
+        if self.collisions:
+            return self.collisions[0]
+
+    def __set_collision(self, collision):
+        """Set the first collision."""
+        if self.collisions:
+            self.collisions[0] = collision
+        else:
+            self.collisions.append(collision)
+
+    # Properties for backwards compatibility
+    visual = property(__get_visual, __set_visual)
+    collision = property(__get_collision, __set_collision)
+
+
 xmlr.reflect(Link, tag='link', params=[
     name_attribute,
     origin_element,
