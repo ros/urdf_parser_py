@@ -2,8 +2,8 @@
 Changelog for package urdfdom_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.4.0 (2018-02-21)
+------------------
 * Add Link.visual and Link.collision properties (`#28 <https://github.com/ros/urdf_parser_py/issues/28>`_)
 * Add tests for mutli-visual and multi-collision
 * links and collisions load properly as aggregates
