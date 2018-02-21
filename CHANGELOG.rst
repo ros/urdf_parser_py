@@ -2,6 +2,19 @@
 Changelog for package urdfdom_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add Link.visual and Link.collision properties (`#28 <https://github.com/ros/urdf_parser_py/issues/28>`_)
+* Add tests for mutli-visual and multi-collision
+* links and collisions load properly as aggregates
+* Add XPath information when a parse error is encountered
+* Remove travis support. (`#22 <https://github.com/ros/urdf_parser_py/issues/22>`_)
+* Reformat python code to pep8 standard (`#21 <https://github.com/ros/urdf_parser_py/issues/21>`_)
+* Update core.py to allow passing addHeader arg to to_xml_string function (`#19 <https://github.com/ros/urdf_parser_py/issues/19>`_)
+* fixed defaults for xyz/rpy, fixed set_default for Param, added unit tests (`#16 <https://github.com/ros/urdf_parser_py/issues/16>`_)
+* Make unit test run with `catkin_make run_tests` (`#15 <https://github.com/ros/urdf_parser_py/issues/15>`_)
+* Contributors: Chris Lalancette, Chris Paxton, Eric Cousineau, Shane Loretz, Will Baker, eugene-katsevman
+
 0.3.3 (2017-02-10)
 ------------------
 * Made Chris and Shane the maintainers
