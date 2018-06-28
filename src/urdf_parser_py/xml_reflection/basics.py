@@ -1,16 +1,15 @@
 import string
 import yaml
 import collections
-from lxml import etree
 
-# Different implementations mix well it seems
-# @todo Do not use this?
-from xml.etree.ElementTree import ElementTree
+from xml.etree import ElementTree as ET
 
 
 def xml_string(rootXml, addHeader=True):
     # Meh
-    xmlString = etree.tostring(rootXml, pretty_print=True)
+    # TODO(tfoote) restore pretty_print
+    # xmlString = ET.tostring(rootXml, pretty_print=True)
+    xmlString = ET.tostring(rootXml)
     if addHeader:
         xmlString = '<?xml version="1.0"?>\n' + xmlString
     return xmlString
@@ -24,7 +23,7 @@ def node_add(doc, sub):
     if sub is None:
         return None
     if type(sub) == str:
-        return etree.SubElement(doc, sub)
+        return ET.SubElement(doc, sub)
     elif isinstance(sub, etree._Element):
         doc.append(sub)  # This screws up the rest of the tree for prettyprint
         return sub
@@ -40,7 +39,7 @@ def xml_children(node):
     children = node.getchildren()
 
     def predicate(node):
-        return not isinstance(node, etree._Comment)
+        return not isinstance(node, type(ET.Comment))
     return list(filter(predicate, children))
 
 
@@ -62,7 +61,7 @@ def to_yaml(obj):
         return obj
     elif hasattr(obj, 'to_yaml'):
         out = obj.to_yaml()
-    elif isinstance(obj, etree._Element):
+    elif isinstance(obj, type(ET.Element)):
         out = etree.tostring(obj, pretty_print=True)
     elif type(obj) == dict:
         out = {}

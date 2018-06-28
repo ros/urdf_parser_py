@@ -511,7 +511,7 @@ class Object(YamlReflection):
         """ Creates an overarching tag and adds its contents to the node """
         tag = self.XML_REFL.tag
         assert tag is not None, "Must define 'tag' in reflection to use this function"  # noqa
-        doc = etree.Element(tag)
+        doc = ET.Element(tag)
         self.write_xml(doc)
         return doc
 
@@ -533,7 +533,8 @@ class Object(YamlReflection):
 
     @classmethod
     def from_xml_string(cls, xml_string):
-        node = etree.fromstring(xml_string)
+        type(ET)
+        node = ET.fromstring(xml_string)
         return cls.from_xml(node)
 
     @classmethod
@@ -585,7 +586,7 @@ class Object(YamlReflection):
     """ Compatibility """
 
     def parse(self, xml_string):
-        node = etree.fromstring(xml_string)
+        node = ET.fromstring(xml_string)
         self.read_xml(node)
         return self
 
