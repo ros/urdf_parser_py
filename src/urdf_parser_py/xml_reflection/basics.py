@@ -6,9 +6,6 @@ from xml.etree import ElementTree as ET
 
 
 def xml_string(rootXml, addHeader=True):
-    # Meh
-    # TODO(tfoote) restore pretty_print
-    # xmlString = ET.tostring(rootXml, pretty_print=True)
     xmlString = ET.tostring(rootXml)
     if addHeader:
         xmlString = '<?xml version="1.0"?>\n' + xmlString
