@@ -533,7 +533,6 @@ class Object(YamlReflection):
 
     @classmethod
     def from_xml_string(cls, xml_string):
-        type(ET)
         node = ET.fromstring(xml_string)
         return cls.from_xml(node)
 
