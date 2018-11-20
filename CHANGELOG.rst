@@ -2,6 +2,8 @@
 Changelog for package urdfdom_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+* Deprecate internal details of `xml_reflection` classes.
+
 0.4.0 (2018-02-21)
 ------------------
 * Add Link.visual and Link.collision properties (`#28 <https://github.com/ros/urdf_parser_py/issues/28>`_)
