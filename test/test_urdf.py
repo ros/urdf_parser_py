@@ -1,27 +1,32 @@
 from __future__ import print_function
 
+from os.path import abspath, dirname, join
 import unittest
-import mock
-import os
 import sys
+import warnings
+from xml.dom import minidom  # noqa
+
+import mock
 
 # Add path to import xml_matching
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                             '../src')))
+# TODO(eacousineau): Can CTest somehow provide this?
+TEST_DIR = dirname(abspath(__file__))
+sys.path.append(TEST_DIR)
+sys.path.append(join(dirname(TEST_DIR), 'src'))
 
-from xml.dom import minidom  # noqa
-from xml_matching import xml_matches  # noqa
 from urdf_parser_py import urdf  # noqa
-import urdf_parser_py.xml_reflection as xmlr
+import urdf_parser_py._xml_reflection as _xmlr
+from xml_matching import xml_matches  # noqa
+from test_base import TestBase
 
-class ParseException(xmlr.core.ParseError):
+
+class ParseException(_xmlr.ParseError):
     def __init__(self, e = "", path = ""):
         super(ParseException, self).__init__(e, path)
 
 
-class TestURDFParser(unittest.TestCase):
-    @mock.patch('urdf_parser_py.xml_reflection.on_error',
+class TestURDFParser(TestBase):
+    @mock.patch('urdf_parser_py._xml_reflection.on_error',
                 mock.Mock(side_effect=ParseException))
     def parse(self, xml):
         return urdf.Robot.from_xml_string(xml)
@@ -183,8 +188,8 @@ class TestURDFParser(unittest.TestCase):
         self.parse_and_compare(xml)
 
 
-class LinkOriginTestCase(unittest.TestCase):
-    @mock.patch('urdf_parser_py.xml_reflection.on_error',
+class LinkOriginTestCase(TestBase):
+    @mock.patch('urdf_parser_py._xml_reflection.on_error',
                 mock.Mock(side_effect=ParseException))
     def parse(self, xml):
         return urdf.Robot.from_xml_string(xml)
@@ -220,7 +225,7 @@ class LinkOriginTestCase(unittest.TestCase):
         self.assertEquals(origin.rpy, [0, 0, 0])
 
 
-class LinkMultiVisualsAndCollisionsTest(unittest.TestCase):
+class LinkMultiVisualsAndCollisionsTest(TestBase):
 
     xml = '''<?xml version="1.0"?>
 <robot name="test">
@@ -274,6 +279,27 @@ class LinkMultiVisualsAndCollisionsTest(unittest.TestCase):
         dummyObject = set()
         robot.links[0].collision = dummyObject
         self.assertEquals(id(dummyObject), id(robot.links[0].collisions[0]))
+
+
+class TestDeprecation(TestBase):
+    """Tests deprecated interfaces."""
+    def test_deprecated_properties(self):
+        with self.catch_warnings() as w:
+            urdf.Robot.XML_REFL
+            urdf.Pose().check_valid()
+            self.assertEqual(len(w), 2)
+            self.assertIn("'XML_REFL'", str(w[0].message))
+            self.assertIn("'check_valid'", str(w[1].message))
+
+
+class TestExampleRobots(TestBase):
+    """Tests that some samples files can be parsed without error."""
+    @unittest.skip("Badly formatted transmissions")
+    def test_calvin_urdf(self):
+        urdf.Robot.from_xml_file(join(TEST_DIR, 'calvin/calvin.urdf'))
+
+    def test_romeo_urdf(self):
+        urdf.Robot.from_xml_file(join(TEST_DIR, 'romeo/romeo.urdf'))
 
 
 if __name__ == '__main__':

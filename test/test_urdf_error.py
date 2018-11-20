@@ -1,21 +1,33 @@
 from __future__ import print_function
 
+from os.path import abspath, dirname, join
+import sys
 import unittest
+import warnings
+
+# TODO(eacousineau): Can CTest somehow provide this?
+TEST_DIR = dirname(abspath(__file__))
+sys.path.append(TEST_DIR)
+sys.path.append(join(dirname(TEST_DIR), 'src'))
+
 from urdf_parser_py import urdf
-import urdf_parser_py.xml_reflection as xmlr
+import urdf_parser_py._xml_reflection as _xmlr
+from test_base import TestBase
 
-ParseError = xmlr.core.ParseError
+ParseError = _xmlr.ParseError
 
-class TestURDFParserError(unittest.TestCase):
+
+class TestURDFParserError(TestBase):
     def setUp(self):
+        TestBase.setUp(self)
         # Manually patch "on_error" to capture errors
         self.errors = []
         def add_error(message):
             self.errors.append(message)
-        xmlr.core.on_error = add_error
+        _xmlr.core.on_error = add_error
 
     def tearDown(self):
-        xmlr.core.on_error = xmlr.core.on_error_stderr
+        _xmlr.core.on_error = _xmlr.core.on_error_stderr
 
     def assertLoggedErrors(self, errors, func, *args, **kwds):
         func(*args, **kwds)
@@ -145,6 +157,7 @@ class TestURDFParserError(unittest.TestCase):
         funcs = self.getParseFuncs(urdf.Robot, xml_string)
         for func in funcs:
             self.assertParseErrorPath("/robot[@name='test']/transmission[@name='simple_trans_bad']", func)
+
 
 if __name__ == '__main__':
     unittest.main()
