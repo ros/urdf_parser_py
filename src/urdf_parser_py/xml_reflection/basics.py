@@ -5,7 +5,7 @@ from lxml import etree
 
 def xml_string(rootXml, addHeader=True):
     # Meh
-    xmlString = etree.tostring(rootXml, pretty_print=True)
+    xmlString = etree.tostring(rootXml, pretty_print=True, encoding='unicode')
     if addHeader:
         xmlString = '<?xml version="1.0"?>\n' + xmlString
     return xmlString

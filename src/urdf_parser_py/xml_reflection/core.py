@@ -100,10 +100,10 @@ def make_type(cur_type):
 
 class Path(object):
     def __init__(self, tag, parent=None, suffix="", tree=None):
-	self.parent = parent
-	self.tag = tag
-	self.suffix = suffix
-	self.tree = tree # For validating general path (getting true XML path)
+        self.parent = parent
+        self.tag = tag
+        self.suffix = suffix
+        self.tree = tree # For validating general path (getting true XML path)
 
     def __str__(self):
         if self.parent is not None:
@@ -116,10 +116,10 @@ class Path(object):
 
 class ParseError(Exception):
     def __init__(self, e, path):
-	self.e = e
-	self.path = path
-	message = "ParseError in {}:\n{}".format(self.path, self.e)
-	super(ParseError, self).__init__(message)
+        self.e = e
+        self.path = path
+        message = "ParseError in {}:\n{}".format(self.path, self.e)
+        super(ParseError, self).__init__(message)
 
 
 class ValueType(object):
@@ -491,9 +491,9 @@ class Reflection(object):
                     if attribute.xml_var == id_var:
                         # Add id_var suffix to current path (do not copy so it propagates)
                         path.suffix = "[@{}='{}']".format(id_var, attribute.get_value(obj))
-                except ParseError, e:
+                except ParseError:
                     raise
-                except Exception, e:
+                except Exception as e:
                     raise ParseError(e, attr_path)
                 unset_attributes.remove(xml_var)
                 info.attributes.remove(xml_var)
@@ -524,7 +524,7 @@ class Reflection(object):
                 attribute.set_default(obj)
             except ParseError:
                 raise
-            except Exception, e:
+            except Exception as e:
                 raise ParseError(e, path) # get_attr_path(attribute.xml_var)
 
         for element in map(self.element_map.get, unset_scalars):
@@ -532,7 +532,7 @@ class Reflection(object):
                 element.set_default(obj)
             except ParseError:
                 raise
-            except Exception, e:
+            except Exception as e:
                 raise ParseError(e, path) # get_element_path(element)
 
         if is_final:
@@ -597,7 +597,7 @@ class Object(YamlReflection):
             self.check_valid()
         except ParseError:
             raise
-        except Exception, e:
+        except Exception as e:
             raise ParseError(e, path)
 
     @classmethod
