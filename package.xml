@@ -25,7 +25,6 @@
 
   <depend>python</depend>
 
-  <exec_depend>python-lxml</exec_depend>
   <exec_depend>python-yaml</exec_depend>
 
   <test_depend>python-mock</test_depend>
