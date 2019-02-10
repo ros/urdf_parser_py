@@ -21,17 +21,13 @@
   <url type="bugtracker">https://github.com/ros/urdf_parser_py/issues</url>
   <url type="repository">https://github.com/ros/urdf_parser_py</url>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend>rclpy</exec_depend>
 
-  <exec_depend>rospy</exec_depend>
+  <exec_depend>python3-lxml</exec_depend>
+  <exec_depend>python3-yaml</exec_depend>
+  <test_depend>python3-mock</test_depend>
 
-  <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-lxml</exec_depend>
-  <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-lxml</exec_depend>
-
-  <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-yaml</exec_depend>
-  <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-yaml</exec_depend>
-
-  <test_depend condition="$ROS_PYTHON_VERSION == 2">python-mock</test_depend>
-  <test_depend condition="$ROS_PYTHON_VERSION == 3">python3-mock</test_depend>
-
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
 </package>
