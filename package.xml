@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<package format="2">
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
   <name>urdfdom_py</name>
   <version>0.3.3</version>
   <description>Python implementation of the URDF parser.</description>
@@ -13,6 +14,7 @@
   <author>Eric Cousineau</author>
   <author email="isucan@gmail.com">Ioan Sucan</author>
   <author email="jacquelinekay1@gmail.com">Jackie Kay</author>
+  <author email="vmayoral@acutronicrobotics.com">Víctor Mayoral Vilches</author>
 
   <maintainer email="clalancette@osrfoundation.org">Chris Lalancette</maintainer>
   <maintainer email="sloretz@osrfoundation.org">Shane Loretz</maintainer>
@@ -21,13 +23,14 @@
   <url type="bugtracker">https://github.com/ros/urdf_parser_py/issues</url>
   <url type="repository">https://github.com/ros/urdf_parser_py</url>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>python</depend>
-
   <exec_depend>python-lxml</exec_depend>
   <exec_depend>python-yaml</exec_depend>
-
   <test_depend>python-mock</test_depend>
 
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
 </package>
