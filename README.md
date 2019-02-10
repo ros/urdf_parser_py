@@ -17,6 +17,9 @@ Not yet sure how to get it to generate catkin-like development installs, which u
 *	Kelsey Hawkins - `urdf_parser_python` implementation, integration
 *	Antonio El Khoury - bugfixes
 *	Eric Cousineau - reflection (serialization?) changes
+* Ioan Sucan
+* Jackie Kay
+* Víctor Mayoral Vilches - port to ROS 2
 
 ## Reflection (or just Serialization?)
 
