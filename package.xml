@@ -25,10 +25,9 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <depend>python</depend>
-  <exec_depend>python-lxml</exec_depend>
-  <exec_depend>python-yaml</exec_depend>
-  <test_depend>python-mock</test_depend>
+  <exec_depend>python3-lxml</exec_depend>
+  <exec_depend>python3-yaml</exec_depend>
+  <test_depend>python3-mock</test_depend>
 
   <export>
     <build_type>ament_python</build_type>

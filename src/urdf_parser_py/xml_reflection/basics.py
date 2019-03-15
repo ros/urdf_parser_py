@@ -10,7 +10,7 @@ from xml.etree.ElementTree import ElementTree
 
 def xml_string(rootXml, addHeader=True):
     # Meh
-    xmlString = etree.tostring(rootXml, pretty_print=True)
+    xmlString = etree.tostring(rootXml, pretty_print=True, encoding=str)
     if addHeader:
         xmlString = '<?xml version="1.0"?>\n' + xmlString
     return xmlString
