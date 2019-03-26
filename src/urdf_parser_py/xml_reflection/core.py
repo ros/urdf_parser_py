@@ -196,7 +196,7 @@ class RawType(ValueType):
         children = xml_children(value)
         list(map(node.append, children))
         # Copy attributes
-        for (attrib_key, attrib_value) in value.attrib.iteritems():
+        for (attrib_key, attrib_value) in value.attrib.items():
             node.set(attrib_key, attrib_value)
 
 
