@@ -1,4 +1,3 @@
-from __future__ import print_function
 
 import unittest
 import mock
@@ -201,8 +200,8 @@ class LinkOriginTestCase(unittest.TestCase):
 </robot>'''
         robot = self.parse(xml)
         origin = robot.links[0].inertial.origin
-        self.assertEquals(origin.xyz, [0, 0, 0])
-        self.assertEquals(origin.rpy, [0, 0, 0])
+        self.assertEqual(origin.xyz, [0, 0, 0])
+        self.assertEqual(origin.rpy, [0, 0, 0])
 
     def test_robot_link_defaults_xyz_set(self):
         xml = '''<?xml version="1.0"?>
@@ -216,8 +215,8 @@ class LinkOriginTestCase(unittest.TestCase):
 </robot>'''
         robot = self.parse(xml)
         origin = robot.links[0].inertial.origin
-        self.assertEquals(origin.xyz, [1, 2, 3])
-        self.assertEquals(origin.rpy, [0, 0, 0])
+        self.assertEqual(origin.xyz, [1, 2, 3])
+        self.assertEqual(origin.rpy, [0, 0, 0])
 
 
 class LinkMultiVisualsAndCollisionsTest(unittest.TestCase):
@@ -253,27 +252,27 @@ class LinkMultiVisualsAndCollisionsTest(unittest.TestCase):
 
     def test_multi_visual_access(self):
         robot = urdf.Robot.from_xml_string(self.xml)
-        self.assertEquals(2, len(robot.links[0].visuals))
+        self.assertEqual(2, len(robot.links[0].visuals))
         self.assertEqual(
             id(robot.links[0].visuals[0]), id(robot.links[0].visual))
 
-        self.assertEquals(None, robot.links[1].visual)
+        self.assertEqual(None, robot.links[1].visual)
 
         dummyObject = set()
         robot.links[0].visual = dummyObject
-        self.assertEquals(id(dummyObject), id(robot.links[0].visuals[0]))
+        self.assertEqual(id(dummyObject), id(robot.links[0].visuals[0]))
 
     def test_multi_collision_access(self):
         robot = urdf.Robot.from_xml_string(self.xml)
-        self.assertEquals(2, len(robot.links[0].collisions))
+        self.assertEqual(2, len(robot.links[0].collisions))
         self.assertEqual(
             id(robot.links[0].collisions[0]), id(robot.links[0].collision))
 
-        self.assertEquals(None, robot.links[1].collision)
+        self.assertEqual(None, robot.links[1].collision)
 
         dummyObject = set()
         robot.links[0].collision = dummyObject
-        self.assertEquals(id(dummyObject), id(robot.links[0].collisions[0]))
+        self.assertEqual(id(dummyObject), id(robot.links[0].collisions[0]))
 
 
 if __name__ == '__main__':
