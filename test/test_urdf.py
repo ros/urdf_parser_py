@@ -235,6 +235,15 @@ class TestURDFParser(unittest.TestCase):
 </robot>'''
         self.parse_and_compare(xml)
 
+        robot = urdf.Robot(name = 'test')
+        link = urdf.Link(name = 'link')
+        link.visual = urdf.Visual(geometry = urdf.Cylinder(length = 1, radius = 1),
+                                  material = urdf.Material(name = 'mat'))
+        link.visual = urdf.Visual(geometry = urdf.Cylinder(length = 4, radius = 0.5),
+                                  material = urdf.Material(name = 'mat2'))
+        robot.add_link(link)
+        self.xml_and_compare(robot, xml)
+
     def test_link_multiple_collision(self):
         xml = '''<?xml version="1.0"?>
 <robot name="test">
@@ -252,6 +261,13 @@ class TestURDFParser(unittest.TestCase):
   </link>
 </robot>'''
         self.parse_and_compare(xml)
+
+        robot = urdf.Robot(name = 'test')
+        link = urdf.Link(name = 'link')
+        link.collision = urdf.Visual(geometry = urdf.Cylinder(length = 1, radius = 1))
+        link.collision = urdf.Visual(geometry = urdf.Cylinder(length = 4, radius = 0.5))
+        robot.add_link(link)
+        self.xml_and_compare(robot, xml)
 
 
 class LinkOriginTestCase(unittest.TestCase):
@@ -346,6 +362,41 @@ class LinkMultiVisualsAndCollisionsTest(unittest.TestCase):
         robot.links[0].collision = dummyObject
         self.assertEqual(id(dummyObject), id(robot.links[0].collisions[0]))
 
+    def test_xml_and_urdfdom_robot_compatible_with_kinetic(self):
+        robot = urdf.Robot(name = 'test')
+        link = urdf.Link(name = 'link')
+        link.visual = urdf.Visual(geometry = urdf.Cylinder(length = 1, radius = 1),
+                                  material = urdf.Material(name = 'mat'))
+        link.visual = urdf.Visual(geometry = urdf.Cylinder(length = 4, radius = 0.5),
+                                  material = urdf.Material(name = 'mat2'))
+        link.collision = urdf.Collision(geometry = urdf.Cylinder(length = 1, radius = 1))
+        link.collision = urdf.Collision(geometry = urdf.Cylinder(length = 4, radius = 0.5))
+        robot.add_link(link)
+        link = urdf.Link(name = 'link2')
+        robot.add_link(link)
+        #
+        robot_xml_string = robot.to_xml_string()
+        robot_xml = minidom.parseString(robot_xml_string)
+        orig_xml = minidom.parseString(self.xml)
+        self.assertTrue(xml_matches(robot_xml, orig_xml))
+
+    def test_xml_and_urdfdom_robot_only_supported_since_melodic(self):
+        robot = urdf.Robot(name = 'test')
+        link = urdf.Link(name = 'link')
+        link.add_aggregate('visual', urdf.Visual(geometry = urdf.Cylinder(length = 1, radius = 1),
+                                                 material = urdf.Material(name = 'mat')))
+        link.add_aggregate('visual', urdf.Visual(geometry = urdf.Cylinder(length = 4, radius = 0.5),
+                                                 material = urdf.Material(name = 'mat2')))
+        link.add_aggregate('collision', urdf.Collision(geometry = urdf.Cylinder(length = 1, radius = 1)))
+        link.add_aggregate('collision', urdf.Collision(geometry = urdf.Cylinder(length = 4, radius = 0.5)))
+        robot.add_link(link)
+        link = urdf.Link(name = 'link2')
+        robot.add_link(link)
+        #
+        robot_xml_string = robot.to_xml_string()
+        robot_xml = minidom.parseString(robot_xml_string)
+        orig_xml = minidom.parseString(self.xml)
+        self.assertTrue(xml_matches(robot_xml, orig_xml))
 
 if __name__ == '__main__':
     unittest.main()
