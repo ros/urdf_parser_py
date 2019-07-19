@@ -13,9 +13,9 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    author='Víctor Mayoral Vilches',
+    author='Victor Mayoral Vilches',
     author_email='vmayoral@acutronicrobotics.com',
-    maintainer='Víctor Mayoral Vilches',
+    maintainer='Victor Mayoral Vilches',
     maintainer_email='vmayoral@acutronicrobotics.com',
     keywords=['ROS2'],
     classifiers=[
