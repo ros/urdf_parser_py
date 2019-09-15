@@ -1,7 +1,28 @@
-import string
-import yaml
 import collections
+import string
+# TODO(eacousineau): Leverage tfoote's PR.
+from xml.etree.ElementTree import ElementTree
+
 from lxml import etree
+import yaml
+
+# TODO(eacousineau): Deprecate public access.
+from urdf_parser_py import _now_private_property
+
+__all__ = [
+    "xml_string",
+    "dict_sub",
+    "node_add",
+    "pfloat",
+    "xml_children",
+    "isstring",
+    "to_yaml",
+    "SelectiveReflection",
+    "YamlReflection",
+    # Backwards compatibility.
+    "etree",
+]
+
 
 def xml_string(rootXml, addHeader=True):
     # Meh
@@ -74,13 +95,15 @@ def to_yaml(obj):
 
 
 class SelectiveReflection(object):
-    def get_refl_vars(self):
+    def _get_refl_vars(self):
         return list(vars(self).keys())
+
+    get_refl_vars = _now_private_property('_get_refl_vars')
 
 
 class YamlReflection(SelectiveReflection):
     def to_yaml(self):
-        raw = dict((var, getattr(self, var)) for var in self.get_refl_vars())
+        raw = dict((var, getattr(self, var)) for var in self._get_refl_vars())
         return to_yaml(raw)
 
     def __str__(self):
