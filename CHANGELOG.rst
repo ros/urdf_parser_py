@@ -2,6 +2,12 @@
 Changelog for package urdfdom_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.4.1 (2019-10-22)
+------------------
+* Python 3 fixes (`#38 <https://github.com/ros/urdf_parser_py/issues/38>`_ `#43 <https://github.com/ros/urdf_parser_py/issues/43>`_ `#48 <https://github.com/ros/urdf_parser_py/issues/48>`_)
+* Remove old example test (`#37 <https://github.com/ros/urdf_parser_py/issues/37>`_)
+* Contributors: Chris Lalancette, Eric Cousineau, Markus Grimm, Timon Engelke
+
 0.4.0 (2018-02-21)
 ------------------
 * Add Link.visual and Link.collision properties (`#28 <https://github.com/ros/urdf_parser_py/issues/28>`_)
