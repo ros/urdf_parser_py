@@ -535,9 +535,16 @@ class Robot(xmlr.Object):
 
     def post_read_xml(self):
         if self.version is None:
-            self.version = 1.0
+            self.version = "1.0"
 
-        if self.version != 1.0:
+        split = self.version.split(".")
+        if len(split) != 2:
+            raise Exception("The version attribute should be in the form 'x.y'")
+
+        if int(split[0]) < 0 or int(split[1]) < 0:
+            raise Exception("Version number must be positive")
+
+        if self.version != "1.0":
             raise Exception("Invalid version; only 1.0 is supported")
 
     @classmethod
@@ -555,7 +562,7 @@ class Robot(xmlr.Object):
 
 xmlr.reflect(Robot, tag='robot', params=[
     xmlr.Attribute('name', str),
-    xmlr.Attribute('version', float, False),
+    xmlr.Attribute('version', str, False),
     xmlr.AggregateElement('link', Link),
     xmlr.AggregateElement('joint', Joint),
     xmlr.AggregateElement('gazebo', xmlr.RawType()),
