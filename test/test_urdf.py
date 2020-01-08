@@ -185,55 +185,55 @@ class TestURDFParser(unittest.TestCase):
         xml = '''<?xml version="1.0"?>
 <robot name="test" version="1">
 </robot>'''
-        self.assertRaises(Exception, self.parse, xml)
+        self.assertRaises(ValueError, self.parse, xml)
 
     def test_version_attribute_too_many_dots(self):
         xml = '''<?xml version="1.0"?>
 <robot name="test" version="1.0.0">
 </robot>'''
-        self.assertRaises(Exception, self.parse, xml)
+        self.assertRaises(ValueError, self.parse, xml)
 
     def test_version_attribute_not_enough_numbers(self):
         xml = '''<?xml version="1.0"?>
 <robot name="test" version="1.">
 </robot>'''
-        self.assertRaises(Exception, self.parse, xml)
+        self.assertRaises(ValueError, self.parse, xml)
 
     def test_version_attribute_no_major_number(self):
         xml = '''<?xml version="1.0"?>
-<robot name="test" version="1.">
+<robot name="test" version=".0">
 </robot>'''
-        self.assertRaises(Exception, self.parse, xml)
+        self.assertRaises(ValueError, self.parse, xml)
 
     def test_version_attribute_negative_major_number(self):
         xml = '''<?xml version="1.0"?>
 <robot name="test" version="-1.0">
 </robot>'''
-        self.assertRaises(Exception, self.parse, xml)
+        self.assertRaises(ValueError, self.parse, xml)
 
     def test_version_attribute_negative_minor_number(self):
         xml = '''<?xml version="1.0"?>
-<robot name="test" version="-1.0">
+<robot name="test" version="1.-0">
 </robot>'''
-        self.assertRaises(Exception, self.parse, xml)
+        self.assertRaises(ValueError, self.parse, xml)
 
     def test_version_attribute_dots_no_numbers(self):
         xml = '''<?xml version="1.0"?>
 <robot name="test" version="a.c">
 </robot>'''
-        self.assertRaises(Exception, self.parse, xml)
+        self.assertRaises(ValueError, self.parse, xml)
 
     def test_version_attribute_dots_one_number(self):
         xml = '''<?xml version="1.0"?>
 <robot name="test" version="1.c">
 </robot>'''
-        self.assertRaises(Exception, self.parse, xml)
+        self.assertRaises(ValueError, self.parse, xml)
 
     def test_version_attribute_trailing_junk(self):
         xml = '''<?xml version="1.0"?>
 <robot name="test" version="1.0~pre6">
 </robot>'''
-        self.assertRaises(Exception, self.parse, xml)
+        self.assertRaises(ValueError, self.parse, xml)
 
     def test_version_attribute_correct(self):
         xml = '''<?xml version="1.0"?>
@@ -245,13 +245,13 @@ class TestURDFParser(unittest.TestCase):
         xml = '''<?xml version="1.0"?>
 <robot name="test" version="foo">
 </robot>'''
-        self.assertRaises(Exception, self.parse, xml)
+        self.assertRaises(ValueError, self.parse, xml)
 
     def test_version_attribute_invalid_version(self):
         xml = '''<?xml version="1.0"?>
 <robot name="test" version="2.0">
 </robot>'''
-        self.assertRaises(Exception, self.parse, xml)
+        self.assertRaises(ValueError, self.parse, xml)
 
 class LinkOriginTestCase(unittest.TestCase):
     @mock.patch('urdf_parser_py.xml_reflection.on_error',

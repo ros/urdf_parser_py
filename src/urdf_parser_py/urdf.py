@@ -539,13 +539,16 @@ class Robot(xmlr.Object):
 
         split = self.version.split(".")
         if len(split) != 2:
-            raise Exception("The version attribute should be in the form 'x.y'")
+            raise ValueError("The version attribute should be in the form 'x.y'")
+
+        if split[0] == '' or split[1] == '':
+            raise ValueError("Empty major or minor number is not allowed")
 
         if int(split[0]) < 0 or int(split[1]) < 0:
-            raise Exception("Version number must be positive")
+            raise ValueError("Version number must be positive")
 
         if self.version != "1.0":
-            raise Exception("Invalid version; only 1.0 is supported")
+            raise ValueError("Invalid version; only 1.0 is supported")
 
     @classmethod
     def from_parameter_server(cls, key='robot_description'):
