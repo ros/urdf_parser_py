@@ -33,7 +33,7 @@ class TestURDFParser(unittest.TestCase):
 
     def test_new_transmission(self):
         xml = '''<?xml version="1.0"?>
-<robot name="test">
+<robot name="test" version="1.0">
   <transmission name="simple_trans">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="foo_joint">
@@ -48,7 +48,7 @@ class TestURDFParser(unittest.TestCase):
 
     def test_new_transmission_multiple_joints(self):
         xml = '''<?xml version="1.0"?>
-<robot name="test">
+<robot name="test" version="1.0">
   <transmission name="simple_trans">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="foo_joint">
@@ -67,7 +67,7 @@ class TestURDFParser(unittest.TestCase):
 
     def test_new_transmission_multiple_actuators(self):
         xml = '''<?xml version="1.0"?>
-<robot name="test">
+<robot name="test" version="1.0">
   <transmission name="simple_trans">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="foo_joint">
@@ -83,16 +83,16 @@ class TestURDFParser(unittest.TestCase):
 
     def test_new_transmission_missing_joint(self):
         xml = '''<?xml version="1.0"?>
-<robot name="test">
+<robot name="test" version="1.0">
   <transmission name="simple_trans">
     <type>transmission_interface/SimpleTransmission</type>
   </transmission>
 </robot>'''
-        self.assertRaises(Exception, self.parse, xml)
+        self.assertRaises(xmlr.core.ParseError, self.parse, xml)
 
     def test_new_transmission_missing_actuator(self):
         xml = '''<?xml version="1.0"?>
-<robot name="test">
+<robot name="test" version="1.0">
   <transmission name="simple_trans">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="foo_joint">
@@ -100,11 +100,11 @@ class TestURDFParser(unittest.TestCase):
     </joint>
   </transmission>
 </robot>'''
-        self.assertRaises(Exception, self.parse, xml)
+        self.assertRaises(xmlr.core.ParseError, self.parse, xml)
 
     def test_old_transmission(self):
         xml = '''<?xml version="1.0"?>
-<robot name="test">
+<robot name="test" version="1.0">
   <transmission name="PR2_trans" type="SimpleTransmission">
     <joint name="foo_joint"/>
     <actuator name="foo_motor"/>
@@ -115,7 +115,7 @@ class TestURDFParser(unittest.TestCase):
 
     def test_link_material_missing_color_and_texture(self):
         xml = '''<?xml version="1.0"?>
-<robot name="test">
+<robot name="test" version="1.0">
   <link name="link">
     <visual>
       <geometry>
@@ -129,7 +129,7 @@ class TestURDFParser(unittest.TestCase):
 
     def test_robot_material(self):
         xml = '''<?xml version="1.0"?>
-<robot name="test">
+<robot name="test" version="1.0">
   <material name="mat">
     <color rgba="0.0 0.0 0.0 1.0"/>
   </material>
@@ -138,14 +138,14 @@ class TestURDFParser(unittest.TestCase):
 
     def test_robot_material_missing_color_and_texture(self):
         xml = '''<?xml version="1.0"?>
-<robot name="test">
+<robot name="test" version="1.0">
   <material name="mat"/>
 </robot>'''
-        self.assertRaises(ParseException, self.parse, xml)
+        self.assertRaises(xmlr.core.ParseError, self.parse, xml)
 
     def test_link_multiple_visual(self):
         xml = '''<?xml version="1.0"?>
-<robot name="test">
+<robot name="test" version="1.0">
   <link name="link">
     <visual>
       <geometry>
@@ -165,7 +165,7 @@ class TestURDFParser(unittest.TestCase):
 
     def test_link_multiple_collision(self):
         xml = '''<?xml version="1.0"?>
-<robot name="test">
+<robot name="test" version="1.0">
   <link name="link">
     <collision>
       <geometry>
@@ -181,6 +181,77 @@ class TestURDFParser(unittest.TestCase):
 </robot>'''
         self.parse_and_compare(xml)
 
+    def test_version_attribute_not_enough_dots(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test" version="1">
+</robot>'''
+        self.assertRaises(ValueError, self.parse, xml)
+
+    def test_version_attribute_too_many_dots(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test" version="1.0.0">
+</robot>'''
+        self.assertRaises(ValueError, self.parse, xml)
+
+    def test_version_attribute_not_enough_numbers(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test" version="1.">
+</robot>'''
+        self.assertRaises(ValueError, self.parse, xml)
+
+    def test_version_attribute_no_major_number(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test" version=".0">
+</robot>'''
+        self.assertRaises(ValueError, self.parse, xml)
+
+    def test_version_attribute_negative_major_number(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test" version="-1.0">
+</robot>'''
+        self.assertRaises(ValueError, self.parse, xml)
+
+    def test_version_attribute_negative_minor_number(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test" version="1.-0">
+</robot>'''
+        self.assertRaises(ValueError, self.parse, xml)
+
+    def test_version_attribute_dots_no_numbers(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test" version="a.c">
+</robot>'''
+        self.assertRaises(ValueError, self.parse, xml)
+
+    def test_version_attribute_dots_one_number(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test" version="1.c">
+</robot>'''
+        self.assertRaises(ValueError, self.parse, xml)
+
+    def test_version_attribute_trailing_junk(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test" version="1.0~pre6">
+</robot>'''
+        self.assertRaises(ValueError, self.parse, xml)
+
+    def test_version_attribute_correct(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test" version="1.0">
+</robot>'''
+        self.parse_and_compare(xml)
+
+    def test_version_attribute_invalid(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test" version="foo">
+</robot>'''
+        self.assertRaises(ValueError, self.parse, xml)
+
+    def test_version_attribute_invalid_version(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test" version="2.0">
+</robot>'''
+        self.assertRaises(ValueError, self.parse, xml)
 
 class LinkOriginTestCase(unittest.TestCase):
     @mock.patch('urdf_parser_py.xml_reflection.on_error',
