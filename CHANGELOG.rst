@@ -2,8 +2,8 @@
 Changelog for package urdfdom_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.4.2 (2020-01-22)
+------------------
 * Add in support for the version tag. (`#52 <https://github.com/ros/urdf_parser_py/issues/52>`_)
 * Contributors: Chris Lalancette
 
