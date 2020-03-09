@@ -278,8 +278,8 @@ class TestURDFParser(unittest.TestCase):
 
         robot = urdf.Robot(name='test', version='1.0')
         link = urdf.Link(name='link')
-        link.collision = urdf.Visual(geometry=urdf.Cylinder(length=1, radius=1))
-        link.collision = urdf.Visual(geometry=urdf.Cylinder(length=4, radius=0.5))
+        link.collision = urdf.Collision(geometry=urdf.Cylinder(length=1, radius=1))
+        link.collision = urdf.Collision(geometry=urdf.Cylinder(length=4, radius=0.5))
         robot.add_link(link)
         self.xml_and_compare(robot, xml)
 
