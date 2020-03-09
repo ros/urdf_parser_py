@@ -194,13 +194,15 @@ class LinkMaterial(Material):
 
 
 class Visual(xmlr.Object):
-    def __init__(self, geometry=None, material=None, origin=None):
+    def __init__(self, geometry=None, material=None, origin=None, name=None):
         self.geometry = geometry
         self.material = material
+        self.name = name
         self.origin = origin
 
 
 xmlr.reflect(Visual, tag='visual', params=[
+    xmlr.Attribute('name', str, False),
     origin_element,
     xmlr.Element('geometry', 'geometric'),
     xmlr.Element('material', LinkMaterial, False)
@@ -541,6 +543,23 @@ class Robot(xmlr.Object):
         assert root is not None, "No roots detected, invalid URDF."
         return root
 
+    def post_read_xml(self):
+        if self.version is None:
+            self.version = "1.0"
+
+        split = self.version.split(".")
+        if len(split) != 2:
+            raise ValueError("The version attribute should be in the form 'x.y'")
+
+        if split[0] == '' or split[1] == '':
+            raise ValueError("Empty major or minor number is not allowed")
+
+        if int(split[0]) < 0 or int(split[1]) < 0:
+            raise ValueError("Version number must be positive")
+
+        if self.version != "1.0":
+            raise ValueError("Invalid version; only 1.0 is supported")
+
     @classmethod
     def from_parameter_server(cls, key='robot_description'):
         """
@@ -555,7 +574,8 @@ class Robot(xmlr.Object):
 
 
 xmlr.reflect(Robot, tag='robot', params=[
-    xmlr.Attribute('name', str, False),  # Is 'name' a required attribute?
+    xmlr.Attribute('name', str),
+    xmlr.Attribute('version', str, False),
     xmlr.AggregateElement('link', Link),
     xmlr.AggregateElement('joint', Joint),
     xmlr.AggregateElement('gazebo', xmlr.RawType()),
