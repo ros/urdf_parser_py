@@ -355,7 +355,6 @@ class TestURDFParser(unittest.TestCase):
 </robot>'''
         self.assertRaises(ValueError, self.parse, xml)
 
-
 class LinkOriginTestCase(unittest.TestCase):
     @mock.patch('urdf_parser_py.xml_reflection.on_error',
                 mock.Mock(side_effect=ParseException))
