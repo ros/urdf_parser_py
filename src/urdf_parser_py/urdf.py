@@ -194,13 +194,15 @@ class LinkMaterial(Material):
 
 
 class Visual(xmlr.Object):
-    def __init__(self, geometry=None, material=None, origin=None):
+    def __init__(self, geometry=None, material=None, origin=None, name=None):
         self.geometry = geometry
         self.material = material
+        self.name = name
         self.origin = origin
 
 
 xmlr.reflect(Visual, tag='visual', params=[
+    xmlr.Attribute('name', str, False),
     origin_element,
     xmlr.Element('geometry', 'geometric'),
     xmlr.Element('material', LinkMaterial, False)
