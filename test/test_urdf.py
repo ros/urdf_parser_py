@@ -164,6 +164,20 @@ class TestURDFParser(unittest.TestCase):
 </robot>'''
         self.parse_and_compare(xml)
 
+    def test_visual_with_name(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test">
+  <link name="link">
+    <visual name="alice">
+      <geometry>
+        <cylinder length="1" radius="1"/>
+      </geometry>
+      <material name="mat"/>
+    </visual>
+  </link>
+</robot>'''
+        self.parse_and_compare(xml)
+
     def test_link_multiple_collision(self):
         xml = '''<?xml version="1.0"?>
 <robot name="test">
