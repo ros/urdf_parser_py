@@ -166,7 +166,7 @@ class TestURDFParser(unittest.TestCase):
 
     def test_visual_with_name(self):
         xml = '''<?xml version="1.0"?>
-<robot name="test">
+<robot name="test" version="1.0">
   <link name="link">
     <visual name="alice">
       <geometry>
