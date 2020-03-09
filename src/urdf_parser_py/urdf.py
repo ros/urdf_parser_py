@@ -481,10 +481,12 @@ xmlr.add_type('transmission',
 
 
 class Robot(xmlr.Object):
-    def __init__(self, name=None):
+    def __init__(self, name=None, version=None):
         self.aggregate_init()
 
         self.name = name
+        if version is not None:
+            self.version = version
         self.joints = []
         self.links = []
         self.materials = []
