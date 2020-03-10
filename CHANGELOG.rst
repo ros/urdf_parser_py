@@ -2,6 +2,12 @@
 Changelog for package urdfdom_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add in support for the version tag. (`#52 <https://github.com/ros/urdf_parser_py/issues/52>`_) (`#54 <https://github.com/ros/urdf_parser_py/issues/54>`_)
+* ROS 2 Port (reopened) (`#53 <https://github.com/ros/urdf_parser_py/issues/53>`_)
+* Contributors: Chris Lalancette, Henning Kayser
+
 0.4.1 (2019-10-22)
 ------------------
 * Python 3 fixes (`#38 <https://github.com/ros/urdf_parser_py/issues/38>`_ `#43 <https://github.com/ros/urdf_parser_py/issues/43>`_ `#48 <https://github.com/ros/urdf_parser_py/issues/48>`_)
