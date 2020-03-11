@@ -357,8 +357,12 @@ class Link(xmlr.Object):
         self.aggregate_init()
         self.name = name
         self.visuals = []
+        if visual:
+            self.visual = visual
         self.inertial = inertial
         self.collisions = []
+        if collision:
+            self.collision = collision
         self.origin = origin
 
     def __get_visual(self):
@@ -372,6 +376,8 @@ class Link(xmlr.Object):
             self.visuals[0] = visual
         else:
             self.visuals.append(visual)
+        if visual:
+            self.add_aggregate('visual', visual)
 
     def __get_collision(self):
         """Return the first collision or None."""
@@ -384,6 +390,8 @@ class Link(xmlr.Object):
             self.collisions[0] = collision
         else:
             self.collisions.append(collision)
+        if collision:
+            self.add_aggregate('collision', collision)
 
     # Properties for backwards compatibility
     visual = property(__get_visual, __set_visual)
@@ -473,10 +481,12 @@ xmlr.add_type('transmission',
 
 
 class Robot(xmlr.Object):
-    def __init__(self, name=None):
+    def __init__(self, name=None, version=None):
         self.aggregate_init()
 
         self.name = name
+        if version is not None:
+            self.version = version
         self.joints = []
         self.links = []
         self.materials = []
