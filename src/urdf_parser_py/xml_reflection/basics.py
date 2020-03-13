@@ -43,11 +43,7 @@ def pfloat(x):
 
 
 def xml_children(node):
-    children = node.getchildren()
-
-    def predicate(node):
-        return not isinstance(node, type(ET.Comment))
-    return list(filter(predicate, children))
+    return list(node.getchildren())
 
 
 def isstring(obj):
