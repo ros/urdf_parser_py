@@ -27,7 +27,7 @@ def node_add(doc, sub):
         return None
     if type(sub) == str:
         return ET.SubElement(doc, sub)
-    elif isinstance(sub, etree._Element):
+    elif isinstance(sub, ET.Element):
         doc.append(sub)  # This screws up the rest of the tree for prettyprint
         return sub
     else:
