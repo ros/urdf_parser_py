@@ -15,10 +15,7 @@ def xml_string(rootXml, addHeader=True):
     lines = xml.toprettyxml(indent="  ").split("\n")
     if lines and lines[0].startswith("<?xml") and not addHeader:
         del lines[0]
-    for line in lines:
-        if line.strip():
-            xml_string += line + "\n"
-    return xml_string
+    return "\n".join(filter(lambda line: line.strip(), lines))
 
 
 def dict_sub(obj, keys):
