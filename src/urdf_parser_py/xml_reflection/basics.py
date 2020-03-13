@@ -39,7 +39,7 @@ def pfloat(x):
 
 
 def xml_children(node):
-    return list(node.getchildren())
+    return node.getchildren()
 
 
 def isstring(obj):
