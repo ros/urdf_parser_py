@@ -9,12 +9,12 @@ from xml.dom import minidom
 def xml_string(rootXml, addHeader=True):
     # From: https://stackoverflow.com/a/1206856/170413
     # TODO(eacousineau): This does not preserve attribute order. Fix it.
-    xml = minidom.parseString(ET.tostring(rootXml))
+    dom = minidom.parseString(ET.tostring(rootXml))
     xml_string = ""
-    # N.B. Minidom injects some pure-whitespace lines. Remove them.
-    lines = xml.toprettyxml(indent="  ").split("\n")
+    lines = dom.toprettyxml(indent="  ").split("\n")
     if lines and lines[0].startswith("<?xml") and not addHeader:
         del lines[0]
+    # N.B. Minidom injects some pure-whitespace lines. Remove them.
     return "\n".join(filter(lambda line: line.strip(), lines))
 
 
