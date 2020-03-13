@@ -13,8 +13,7 @@ def xml_string(rootXml, addHeader=True):
     xml_string = ""
     # N.B. Minidom injects some pure-whitespace lines. Remove them.
     lines = xml.toprettyxml(indent="  ").split("\n")
-    assert lines[0].startswith("<?xml")
-    if not addHeader:
+    if lines and lines[0].startswith("<?xml") and not addHeader:
         del lines[0]
     for line in lines:
         if line.strip():
