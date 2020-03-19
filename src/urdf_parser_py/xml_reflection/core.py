@@ -1,8 +1,12 @@
-from urdf_parser_py.xml_reflection.basics import *
 import sys
 import copy
 
-# @todo Get rid of "import *"
+from urdf_parser_py.xml_reflection.basics import node_add
+from urdf_parser_py.xml_reflection.basics import xml_children
+from urdf_parser_py.xml_reflection.basics import xml_string
+from urdf_parser_py.xml_reflection.basics import YamlReflection
+from xml.etree import ElementTree as ET
+
 # @todo Make this work with decorators
 
 # Is this reflection or serialization? I think it's serialization...
