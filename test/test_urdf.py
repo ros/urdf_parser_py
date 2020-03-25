@@ -37,6 +37,32 @@ class TestURDFParser(unittest.TestCase):
         orig_xml = minidom.parseString(xml)
         self.assertTrue(xml_matches(robot_xml, orig_xml))
 
+    def test_sensor_tactile(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test" version="1.0">
+  <sensor name="my_tactile_sensor" group="my_group" update_rate="100">
+    <parent link="my_tactile_mount"/>
+    <origin xyz="1.0 2.0 3.0" rpy="0.4 0.5 0.6"/>
+    <tactile channel="my_channel">
+       <array rows="8" cols="16" order="row-major" 
+              size="0.07 0.09" spacing="0.1 0.11" offset="0.12 0.13"/>
+    </tactile>
+  </sensor>
+</robot>'''
+        self.parse_and_compare(xml)
+
+        robot = urdf.Robot(name='test', version='1.0')
+        arrayelement = urdf.TactileArrayElement(8, 16, "row-major",
+            [0.07, 0.09], [0.1,  0.11], [0.12, 0.13])
+        array = urdf.TactileArray(channel='my_channel', array=arrayelement)
+        sensor = urdf.SensorTactile(name='my_tactile_sensor', parent="my_tactile_mount", tactile=array)
+        sensor.origin = urdf.Pose([1.0, 2.0, 3.0], [0.4, 0.5, 0.6])
+        sensor.group = 'my_group'
+        sensor.update_rate = 100
+        sensor.parent_link = "my_tactile_mount"
+        robot.add_aggregate('sensor', sensor)
+        self.xml_and_compare(robot, xml)
+
     def test_new_transmission(self):
         xml = '''<?xml version="1.0"?>
 <robot name="test" version="1.0">

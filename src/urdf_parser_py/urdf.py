@@ -1,4 +1,5 @@
 from urdf_parser_py.xml_reflection.basics import *
+from urdf_parser_py.xml_reflection.core import *
 import urdf_parser_py.xml_reflection as xmlr
 
 # Add a 'namespace' for names to avoid a conflict between URDF and SDF?
@@ -482,6 +483,180 @@ xmlr.add_type('transmission',
                                     [Transmission, PR2Transmission]))
 
 
+# add the vector2 type
+get_type('vector2')
+
+class Tactile(xmlr.Object):
+    def __init__(self, channel=None, taxels=[], array=None):
+        self.channel = channel
+        self.taxels = taxels
+        self.array = array
+
+
+class TactileArrayElement(xmlr.Object):
+    ROWMAJOR="row-major"
+    COLUMNMAJOR="column-major"
+    def __init__(self, rows=None, cols=None, order=None,
+        size=None, spacing=None, offset=None):
+        self.rows = int(rows) if rows is not None else None
+        self.cols = int(cols) if cols is not None else None
+        self.order = order
+        self.size = size
+        self.spacing = spacing
+        self.offset = offset
+
+    def check_valid(self):
+        assert self.order in [self.ROWMAJOR, self.COLUMNMAJOR], ("order should be " + str(self.ROWMAJOR) + " or " + str(self.COLUMNMAJOR))
+
+
+#xmlr.add_type('geometric', TactileArrayElement())
+
+xmlr.reflect(TactileArrayElement, tag='tactile_array_element', params=[
+    xmlr.Attribute('rows', float),
+    xmlr.Attribute('cols', float),
+    xmlr.Attribute('order', str, False, default="row-major"),
+    xmlr.Attribute('size', 'vector2'),
+    xmlr.Attribute('spacing', 'vector2', False, default=[0, 0]),
+    xmlr.Attribute('offset', 'vector2', False, default=[0, 0])
+])
+
+
+class TactileArray(Tactile):
+    def __init__(self, channel=None,  array=None):
+        Tactile.__init__(self, channel=channel, array=array)
+
+
+xmlr.reflect(TactileArray, tag='tactile_array', params=[
+    xmlr.Attribute('channel', str),
+    xmlr.Element('array', TactileArrayElement, False)
+])
+
+
+class TactileTaxelElement(xmlr.Object):
+    def __init__(self, idx=None, xyz=None, rpy=None, geometry=None):
+        self.idx = int(idx) if idx is not None else None
+        self.xyz = xyz
+        self.rpy = rpy
+        self.geometry = geometry
+
+
+xmlr.reflect(TactileTaxelElement, tag='tactile_taxel_element', params=[
+    xmlr.Attribute('idx', float), 
+    xmlr.Attribute('xyz', 'vector3', False, default=[0, 0, 0]),
+    xmlr.Attribute('rpy', 'vector3', False, default=[0, 0, 0]),
+    xmlr.Element('geometry', 'geometric'),
+])
+
+class TactileTaxels(Tactile):
+    def __init__(self, channel=None, idx=None, origin=None, taxel=None):
+        self.aggregate_init()
+        Tactile.__init__(self, channel=channel, taxels=taxel)
+
+xmlr.reflect(TactileTaxels, tag='tactile_taxels', params=[
+    xmlr.Attribute('channel', str),
+    xmlr.AggregateElement('taxel', TactileTaxelElement, False)
+])
+
+
+xmlr.add_type('tactile',
+              xmlr.DuckTypedFactory('tactile',
+                                    [TactileArray, TactileTaxels]))
+
+
+class Sensor(xmlr.Object):
+    """ UBI Sensor Base """
+
+    def __init__(self, name=None, group=None, update_rate=None,
+        parent=None, origin=None):
+        self.name = name
+        self.group = group
+        self.update_rate = update_rate
+        self.parent = parent
+        self.origin = origin
+        self.sensor = None
+
+
+class SensorTactile(Sensor):
+    """ UBI Sensor format """
+             
+    def __init__(self, name=None, group=None, update_rate=None,
+        parent=None, origin=None, tactile=None):
+        Sensor.__init__(self, name, group, update_rate, parent, origin)
+        # one cannot just pass self.tactile to a sensor initialization
+        # reflect needs the parameter to be part of the object so 
+        # member tactile is nedded
+        self.tactile=tactile
+        self.sensor=self.tactile
+
+    def check_valid(self):
+        # this test cannot be generalized to test sensor in the base class
+        # because the check occurs before the parent element is filled
+        assert self.tactile is not None, "no sensor defined"
+
+xmlr.reflect(SensorTactile, tag='sensor_tactile', params=[
+    name_attribute,
+    xmlr.Attribute('group', str, False, default=""),
+    xmlr.Attribute('update_rate', float),
+    xmlr.Element('parent', 'element_link', False),
+    origin_element,
+    xmlr.Element('tactile', 'tactile')
+])
+
+
+
+class Camera(xmlr.Object):
+    def __init__(self, name=None, width=None, height=None,
+        pixelformat="R8G8B8", hfov=None, near=None, far=None):
+        self.width = int(width) if width is not None else None 
+        self.height = int(height) if height is not None else None
+        # format is optional: defaults to R8G8B8), but can be
+        # (L8|R8G8B8|B8G8R8|BAYER_RGGB8|BAYER_BGGR8|BAYER_GBRG8|BAYER_GRBG8)
+        self.format = pixelformatformat
+        self.hfov = hfov
+        self.near = near
+        self.far = far
+
+xmlr.reflect(Camera, tag='camera', params=[
+    xmlr.Attribute('width', float),
+    xmlr.Attribute('height', float),
+    xmlr.Attribute('format', str),
+    xmlr.Attribute('hfov', float),
+    xmlr.Attribute('near', float),
+    xmlr.Attribute('far', float)
+])
+
+
+class SensorCamera(Sensor):
+    """ UBI Sensor format """
+             
+    def __init__(self, name=None, group=None, update_rate=None,
+        parent=None, origin=None, camera=None):
+        Sensor.__init__(self, name, group, update_rate, parent, origin)
+        # one cannot just pass self.camera to a sensor initialization
+        # reflect needs the parameter to be part of the object so 
+        # member camera is nedded
+        self.camera = camera
+        self.sensor = self.camera
+    
+    def check_valid(self):
+        # this test cannot be generalized to test sensor in the base class
+        # because the check occurs before the parent element is filled
+        assert self.camera is not None, "no sensor defined"
+
+
+xmlr.reflect(SensorCamera, tag='sensor_camera', params=[
+    name_attribute,
+    xmlr.Attribute('group', str, False, default=""),
+    xmlr.Attribute('update_rate', float),
+    origin_element,
+    xmlr.Element('parent', 'element_link', False),
+    xmlr.Element('camera', Camera, False)
+])
+
+xmlr.add_type('sensor',
+              xmlr.DuckTypedFactory('sensor',
+                                    [SensorCamera, SensorTactile]))
+
 class Robot(xmlr.Object):
     SUPPORTED_VERSIONS = ["1.0"]
 
@@ -495,12 +670,14 @@ class Robot(xmlr.Object):
         self.version = version
         self.joints = []
         self.links = []
+        self.sensors = []
         self.materials = []
         self.gazebos = []
         self.transmissions = []
 
         self.joint_map = {}
         self.link_map = {}
+        self.sensor_map = {}
 
         self.parent_map = {}
         self.child_map = {}
@@ -519,12 +696,18 @@ class Robot(xmlr.Object):
         elif typeName == 'link':
             link = elem
             self.link_map[link.name] = link
+        elif typeName == 'sensor':
+            sensor = elem
+            self.sensor_map[sensor.name] = sensor
 
     def add_link(self, link):
         self.add_aggregate('link', link)
 
     def add_joint(self, joint):
         self.add_aggregate('joint', joint)
+
+    def add_sensor(self, sensor):
+        self.add_aggregate('sensor', sensor)
 
     def get_chain(self, root, tip, joints=True, links=True, fixed=True):
         chain = []
@@ -586,6 +769,7 @@ xmlr.reflect(Robot, tag='robot', params=[
     xmlr.Attribute('version', str, False),
     xmlr.AggregateElement('link', Link),
     xmlr.AggregateElement('joint', Joint),
+    xmlr.AggregateElement('sensor', 'sensor'),
     xmlr.AggregateElement('gazebo', xmlr.RawType()),
     xmlr.AggregateElement('transmission', 'transmission'),
     xmlr.AggregateElement('material', Material)
