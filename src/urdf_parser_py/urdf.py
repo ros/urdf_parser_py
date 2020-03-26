@@ -487,10 +487,8 @@ xmlr.add_type('transmission',
 get_type('vector2')
 
 class Tactile(xmlr.Object):
-    def __init__(self, channel=None, taxels=[], array=None):
+    def __init__(self, channel=None):
         self.channel = channel
-        self.taxels = taxels
-        self.array = array
 
 
 class TactileArrayElement(xmlr.Object):
@@ -523,7 +521,8 @@ xmlr.reflect(TactileArrayElement, tag='tactile_array_element', params=[
 
 class TactileArray(Tactile):
     def __init__(self, channel=None,  array=None):
-        Tactile.__init__(self, channel=channel, array=array)
+        Tactile.__init__(self, channel=channel)
+        self.array = array
 
 
 xmlr.reflect(TactileArray, tag='tactile_array', params=[
@@ -534,6 +533,7 @@ xmlr.reflect(TactileArray, tag='tactile_array', params=[
 
 class TactileTaxelElement(xmlr.Object):
     def __init__(self, idx=None, xyz=None, rpy=None, geometry=None):
+        self.aggregate_init()
         self.idx = int(idx) if idx is not None else None
         self.xyz = xyz
         self.rpy = rpy
@@ -548,9 +548,10 @@ xmlr.reflect(TactileTaxelElement, tag='tactile_taxel_element', params=[
 ])
 
 class TactileTaxels(Tactile):
-    def __init__(self, channel=None, idx=None, origin=None, taxel=None):
-        self.aggregate_init()
-        Tactile.__init__(self, channel=channel, taxels=taxel)
+    def __init__(self, channel=None, taxel=None):
+        Tactile.__init__(self, channel=channel)
+        self.taxel = taxel
+        self.taxels=[]
 
 xmlr.reflect(TactileTaxels, tag='tactile_taxels', params=[
     xmlr.Attribute('channel', str),

@@ -37,7 +37,7 @@ class TestURDFParser(unittest.TestCase):
         orig_xml = minidom.parseString(xml)
         self.assertTrue(xml_matches(robot_xml, orig_xml))
 
-    def test_sensor_tactile(self):
+    def test_sensor_tactile_array(self):
         xml = '''<?xml version="1.0"?>
 <robot name="test" version="1.0">
   <sensor name="my_tactile_sensor" group="my_group" update_rate="100">
