@@ -37,6 +37,109 @@ class TestURDFParser(unittest.TestCase):
         orig_xml = minidom.parseString(xml)
         self.assertTrue(xml_matches(robot_xml, orig_xml))
 
+    def test_sensor_unknown(self):
+        # TODO currently  <unknown/> not added when unknown sensors  
+        xml = '''<?xml version="1.0"?>
+<robot name="test" version="1.0">
+   <sensor name="unknown sensor" group="" update_rate="20.0">
+    <parent link="link1"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    <imu />
+  </sensor>
+</robot>'''
+
+        self.parse_and_compare(xml)
+        robot = self.parse(xml)
+        sensor = robot.sensors[0]
+        self.assertEqual(sensor.name , 'unknown')
+
+    def test_sensor_ray(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test" version="1.0">
+  <sensor name="ray1" group="head" update_rate="20.0">
+    <parent link="link1"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    <ray>
+      <horizontal samples="100" resolution="1" min_angle="-1.5708" max_angle="1.5708"/>
+      <vertical samples="1" resolution="1" min_angle="0.0" max_angle="0.0"/>
+    </ray>
+  </sensor>
+</robot>'''
+
+        self.parse_and_compare(xml)
+
+        robot = urdf.Robot(name='test', version='1.0')
+        rayh = urdf.RayElement(samples=100, resolution=1, min_angle=-1.5708, max_angle=1.5708)
+        rayv = urdf.RayElement(samples=1, resolution=1, min_angle=0.0, max_angle=0.0)
+        ray = urdf.Ray()
+        ray.horizontal = rayh
+        ray.vertical = rayv
+        sensor = urdf.SensorRay(name='ray1', parent="link1", group="head", update_rate=20.0, ray=ray)
+        sensor.origin = urdf.Pose([0.0, 0.0, 0.0], [0.0, 0.0, 0.0])
+        robot.add_aggregate('sensor', sensor)
+        self.xml_and_compare(robot, xml)
+
+    def test_sensor_camera(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test" version="1.0">
+  <sensor name="camera1" group="head" update_rate="20.0">
+    <parent link="link1"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    <camera>
+      <image width="640.0" height="480.0" hfov="1.5708" format="RGB8" near="0.01" far="50.0"/>
+    </camera>
+  </sensor>
+</robot>'''
+
+        self.parse_and_compare(xml)
+
+        robot = urdf.Robot(name='test', version='1.0')
+        image = urdf.CameraImage(width=640.0, height=480.0, hfov=1.5708, format="RGB8", near=0.01, far=50.0)
+        camera = urdf.Camera(image=image)
+        sensor = urdf.SensorCamera(name='camera1', parent="link1", group="head", update_rate=20.0, camera=camera)
+        sensor.origin = urdf.Pose([0.0, 0.0, 0.0], [0.0, 0.0, 0.0])
+        robot.add_aggregate('sensor', sensor)
+        self.xml_and_compare(robot, xml)
+
+
+    def test_sensor_tactile_taxel(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test" version="1.0">
+  <sensor name="my_tactile_sensor" group="my_group" update_rate="100">
+   <parent link="my_tactile_mount"/>
+   <origin xyz="1.0 2.0 3.0" rpy="0.4 0.5 0.6"/>
+   <tactile channel="my_channel">
+     <taxel idx="0" xyz="0.02 0.03 0.04" rpy="0.5 0.6 0.7">
+       <geometry>
+         <mesh filename="package://sensor_description/model/my_tactiles/tax_lower.stl" scale="0.00101 0.00101 0.00101"/>
+       </geometry>
+     </taxel>
+     <taxel idx="1" xyz="1.02 1.03 1.04" rpy="1.5 1.6 1.7">
+       <geometry>
+         <box size="12.0 13.0 14.0" />
+       </geometry>
+     </taxel>
+      </tactile>
+  </sensor>
+</robot>'''
+        self.parse_and_compare(xml)
+
+        robot = urdf.Robot(name='test', version='1.0')
+        meshgeometry = urdf.Mesh(filename="package://sensor_description/model/my_tactiles/tax_lower.stl", scale=[0.00101, 0.00101, 0.00101])
+        taxelelement = urdf.TactileTaxelElement(0, [0.02, 0.03, 0.04], [0.5, 0.6, 0.7], meshgeometry)
+        taxel = urdf.TactileTaxels(channel='my_channel')
+        taxel.add_aggregate('taxel', taxelelement)
+        boxgeometry = urdf.Box(size=[12.0, 13.0, 14.0])
+        taxelelement2 = urdf.TactileTaxelElement(1, [1.02, 1.03, 1.04], [1.5, 1.6, 1.7], boxgeometry)
+        taxel.add_aggregate('taxel', taxelelement2)
+        sensor = urdf.SensorTactile(name='my_tactile_sensor', parent="my_tactile_mount", tactile=taxel)
+        sensor.origin = urdf.Pose([1.0, 2.0, 3.0], [0.4, 0.5, 0.6])
+        sensor.group = 'my_group'
+        sensor.update_rate = 100
+        robot.add_aggregate('sensor', sensor)
+        self.xml_and_compare(robot, xml)
+
+
     def test_sensor_tactile_array(self):
         xml = '''<?xml version="1.0"?>
 <robot name="test" version="1.0">
@@ -59,10 +162,43 @@ class TestURDFParser(unittest.TestCase):
         sensor.origin = urdf.Pose([1.0, 2.0, 3.0], [0.4, 0.5, 0.6])
         sensor.group = 'my_group'
         sensor.update_rate = 100
-        sensor.parent_link = "my_tactile_mount"
         robot.add_aggregate('sensor', sensor)
         self.xml_and_compare(robot, xml)
 
+
+    def test_sensor_tactile_array_missing_offset(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test" version="1.0">
+  <sensor name="my_tactile_sensor" group="my_group" update_rate="100">
+    <parent link="my_tactile_mount"/>
+    <origin xyz="1.0 2.0 3.0" rpy="0.4 0.5 0.6"/>
+    <tactile channel="my_channel">
+       <array rows="8" cols="16" order="row-major" 
+              size="0.07 0.09" spacing="0.1 0.11"/>
+    </tactile>
+  </sensor>
+</robot>'''
+        robot = self.parse(xml)
+        tactile = robot.sensors[0].tactile
+        self.assertEqual(tactile.array.offset, [0.0, 0.0])  
+
+
+    def test_sensor_tactile_array_missing_spacing(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test" version="1.0">
+  <sensor name="my_tactile_sensor" group="my_group" update_rate="100">
+    <parent link="my_tactile_mount2"/>
+    <origin xyz="1.0 2.0 3.0" rpy="0.4 0.5 0.6"/>
+    <tactile channel="my_channel">
+       <array rows="8" cols="16" order="row-major" 
+              size="0.07 2.09" offset="0.12 0.13"/>
+    </tactile>
+  </sensor>
+</robot>'''
+        robot = self.parse(xml)
+        tactile = robot.sensors[0].tactile
+        self.assertEqual(tactile.array.spacing , tactile.array.size)  
+  
     def test_new_transmission(self):
         xml = '''<?xml version="1.0"?>
 <robot name="test" version="1.0">
