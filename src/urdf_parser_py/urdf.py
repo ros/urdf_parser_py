@@ -636,6 +636,67 @@ xmlr.reflect(SensorTactile, tag='sensor_tactile', params=[
 ])
 
 
+class RayElement(xmlr.Object):
+    def __init__(self, samples=None, resolution=None,
+        min_angle=None, max_angle=None):
+        self.samples = int(samples) if samples is not None else None 
+        self.resolution = int(resolution) if resolution is not None else None
+        self.min_angle = min_angle
+        self.max_angle = max_angle
+
+    def check_valid(self):
+        assert self.samples is not None
+
+xmlr.reflect(RayElement, tag='ray_element', params=[
+    xmlr.Attribute('samples', float),
+    xmlr.Attribute('resolution', float),
+    xmlr.Attribute('min_angle', float),
+    xmlr.Attribute('max_angle', float)
+])
+
+
+class Ray(xmlr.Object):
+    def __init__(self, horizontal=None, vertical=None):
+        self.horizontal=horizontal
+        self.vertical=vertical
+
+    def check_valid(self):
+        assert self.horizontal is not None and self.vertical is not None
+
+
+xmlr.reflect(Ray, tag='ray', params=[
+    xmlr.Element('horizontal', RayElement),
+    xmlr.Element('vertical', RayElement)
+])
+
+
+class SensorRay(Sensor):
+    """ UBI Sensor format """
+             
+    def __init__(self, name=None, group=None, update_rate=None,
+        parent=None, origin=None, ray=None):
+        Sensor.__init__(self, name, group, update_rate, parent, origin)
+        # one cannot just pass self.ray to a sensor initialization
+        # reflect needs the parameter to be part of the object so 
+        # member ray is nedded
+        self.ray = ray
+        self.sensor = self.ray
+    
+    def check_valid(self):
+        # this test cannot be generalized to test sensor in the base class
+        # because the check occurs before the parent element is filled
+        assert self.ray is not None, "no sensor defined"
+
+
+xmlr.reflect(SensorRay, tag='sensor_ray', params=[
+    name_attribute,
+    xmlr.Attribute('group', str, False, default=""),
+    xmlr.Attribute('update_rate', float),
+    xmlr.Element('parent', 'element_link', False),
+    origin_element,
+    xmlr.Element('ray', Ray)
+])
+
 
 class CameraImage(xmlr.Object):
     def __init__(self, width=None, height=None,
