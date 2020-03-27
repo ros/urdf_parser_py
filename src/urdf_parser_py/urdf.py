@@ -757,14 +757,29 @@ xmlr.reflect(SensorCamera, tag='sensor_camera', params=[
     name_attribute,
     xmlr.Attribute('group', str, False, default=""),
     xmlr.Attribute('update_rate', float),
-    origin_element,
     xmlr.Element('parent', 'element_link', False),
-    xmlr.Element('camera', Camera, False)
+    origin_element,
+    xmlr.Element('camera', Camera)
 ])
+
+
+class UnknownType(xmlr.ValueType):
+    name = "unknown"
+    def from_xml(self, node, path):
+        self.node = node
+        return self
+
+    def write_xml(self, node):
+        # pretty printing
+        children = xml_children(self.node)
+        list(map(node.append, children))
+        # Copy attributes
+        for (attrib_key, attrib_value) in self.node.attrib.items():
+            node.set(attrib_key, attrib_value)
 
 xmlr.add_type('sensor',
               xmlr.DuckTypedFactory('sensor',
-                                    [SensorCamera, SensorTactile]))
+                                    [SensorCamera, SensorRay, SensorTactile, UnknownType()]))
 
 class Robot(xmlr.Object):
     SUPPORTED_VERSIONS = ["1.0"]
@@ -807,7 +822,8 @@ class Robot(xmlr.Object):
             self.link_map[link.name] = link
         elif typeName == 'sensor':
             sensor = elem
-            self.sensor_map[sensor.name] = sensor
+            if not isinstance (sensor , UnknownType):
+                self.sensor_map[sensor.name] = sensor
 
     def add_link(self, link):
         self.add_aggregate('link', link)
