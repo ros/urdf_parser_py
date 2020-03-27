@@ -637,25 +637,40 @@ xmlr.reflect(SensorTactile, tag='sensor_tactile', params=[
 
 
 
-class Camera(xmlr.Object):
-    def __init__(self, name=None, width=None, height=None,
-        pixelformat="R8G8B8", hfov=None, near=None, far=None):
+class CameraImage(xmlr.Object):
+    def __init__(self, width=None, height=None,
+        format="R8G8B8", hfov=None, near=None, far=None):
         self.width = int(width) if width is not None else None 
         self.height = int(height) if height is not None else None
         # format is optional: defaults to R8G8B8), but can be
         # (L8|R8G8B8|B8G8R8|BAYER_RGGB8|BAYER_BGGR8|BAYER_GBRG8|BAYER_GRBG8)
-        self.format = pixelformatformat
+        self.format = format
         self.hfov = hfov
         self.near = near
         self.far = far
 
-xmlr.reflect(Camera, tag='camera', params=[
+    def check_valid(self):
+        assert self.width is not None
+
+xmlr.reflect(CameraImage, tag='image', params=[
     xmlr.Attribute('width', float),
     xmlr.Attribute('height', float),
-    xmlr.Attribute('format', str),
+    xmlr.Attribute('format', str, False),
     xmlr.Attribute('hfov', float),
     xmlr.Attribute('near', float),
     xmlr.Attribute('far', float)
+])
+
+
+class Camera(xmlr.Object):
+    def __init__(self, image=None):
+        self.image = image
+
+    def check_valid(self):
+        assert self.image is not None
+
+xmlr.reflect(Camera, tag='camera', params=[
+    xmlr.Element('image', CameraImage, False)
 ])
 
 
