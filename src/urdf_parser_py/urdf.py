@@ -500,10 +500,12 @@ class TactileArrayElement(xmlr.Object):
         self.cols = int(cols) if cols is not None else None
         self.order = order
         self.size = size
-        self.spacing = spacing
         self.offset = offset
+        self.spacing = spacing
 
     def check_valid(self):
+        if self.spacing is None:
+            self.spacing = self.size
         assert self.order in [self.ROWMAJOR, self.COLUMNMAJOR], ("order should be " + str(self.ROWMAJOR) + " or " + str(self.COLUMNMAJOR))
 
 
@@ -514,7 +516,7 @@ xmlr.reflect(TactileArrayElement, tag='tactile_array_element', params=[
     xmlr.Attribute('cols', float),
     xmlr.Attribute('order', str, False, default="row-major"),
     xmlr.Attribute('size', 'vector2'),
-    xmlr.Attribute('spacing', 'vector2', False, default=[0, 0]),
+    xmlr.Attribute('spacing', 'vector2', False),
     xmlr.Attribute('offset', 'vector2', False, default=[0, 0])
 ])
 
