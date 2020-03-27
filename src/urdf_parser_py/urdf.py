@@ -540,7 +540,6 @@ xmlr.reflect(TactileArray, tag='tactile', params=[
 
 class TactileTaxelElement(xmlr.Object):
     def __init__(self, idx=None, xyz=None, rpy=None, geometry=None):
-        self.aggregate_init()
         self.idx = int(idx) if idx is not None else None
         self.xyz = xyz
         self.rpy = rpy
@@ -557,12 +556,33 @@ xmlr.reflect(TactileTaxelElement, tag='array', params=[
 class TactileTaxels(Tactile):
     def __init__(self, channel=None, taxel=None):
         Tactile.__init__(self, channel=channel)
-        self.taxel = taxel
+        self.aggregate_init()
         self.taxels=[]
+        if taxel:
+            self.taxel = taxel
         self.array = None
+
+    def __get_taxel(self):
+        """Return the first taxel or None."""
+        if self.taxels:
+            return self.taxels[0]
+
+    def __set_taxel(self, taxel):
+        """Set the first taxel."""
+        if self.taxels:
+            self.taxels[0] = taxel
+        else:
+            self.taxels.append(taxel)
+        if taxel:
+            self.add_aggregate('taxel', taxel)
+    
     # the test is very important in DuckTyping, if no fail, won't test the second type
     def check_valid(self):
         assert self.taxel is not None
+        
+    # Properties setter getter
+    taxel = property(__get_taxel, __set_taxel)
+
 
 xmlr.reflect(TactileTaxels, tag='tactile', params=[
     xmlr.Attribute('channel', str),
@@ -573,7 +593,7 @@ xmlr.reflect(TactileTaxels, tag='tactile', params=[
 
 xmlr.add_type('tactile',
               xmlr.DuckTypedFactory('tactile',
-                                    [TactileArray, TactileTaxels]))
+                                    [TactileTaxels, TactileArray]))
 
 
 class Sensor(xmlr.Object):
