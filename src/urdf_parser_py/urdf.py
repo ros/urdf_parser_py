@@ -522,17 +522,19 @@ xmlr.reflect(TactileArrayElement, tag='tactile_array_element', params=[
 
 
 class TactileArray(Tactile):
-    def __init__(self, channel=None,  array=None):
+    def __init__(self, channel=None, array=None):
         Tactile.__init__(self, channel=channel)
         self.array = array
+        self.taxel = None
     # the test is very important in DuckTyping, if no fail, won't test the second type
     def check_valid(self):
         assert self.array is not None
 
 
-xmlr.reflect(TactileArray, tag='tactile_array', params=[
+xmlr.reflect(TactileArray, tag='tactile', params=[
     xmlr.Attribute('channel', str),
-    xmlr.Element('array', TactileArrayElement, False)
+    xmlr.Element('array', TactileArrayElement),
+    xmlr.Element('taxel', xmlr.RawType(), False)
 ])
 
 
@@ -545,7 +547,7 @@ class TactileTaxelElement(xmlr.Object):
         self.geometry = geometry
 
 
-xmlr.reflect(TactileTaxelElement, tag='tactile_taxel_element', params=[
+xmlr.reflect(TactileTaxelElement, tag='array', params=[
     xmlr.Attribute('idx', float), 
     xmlr.Attribute('xyz', 'vector3', False, default=[0, 0, 0]),
     xmlr.Attribute('rpy', 'vector3', False, default=[0, 0, 0]),
@@ -557,13 +559,15 @@ class TactileTaxels(Tactile):
         Tactile.__init__(self, channel=channel)
         self.taxel = taxel
         self.taxels=[]
+        self.array = None
     # the test is very important in DuckTyping, if no fail, won't test the second type
     def check_valid(self):
         assert self.taxel is not None
 
-xmlr.reflect(TactileTaxels, tag='tactile_taxels', params=[
+xmlr.reflect(TactileTaxels, tag='tactile', params=[
     xmlr.Attribute('channel', str),
-    xmlr.AggregateElement('taxel', TactileTaxelElement, False)
+    xmlr.AggregateElement('taxel', TactileTaxelElement),
+    xmlr.Element('array', xmlr.RawType(), False)
 ])
 
 
