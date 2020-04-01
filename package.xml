@@ -27,9 +27,6 @@
 
   <exec_depend>rospy</exec_depend>
 
-  <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-lxml</exec_depend>
-  <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-lxml</exec_depend>
-
   <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-yaml</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-yaml</exec_depend>
 

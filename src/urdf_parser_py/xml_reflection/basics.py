@@ -1,14 +1,21 @@
 import string
 import yaml
 import collections
-from lxml import etree
+
+from xml.etree import ElementTree as ET
+from xml.dom import minidom
+
 
 def xml_string(rootXml, addHeader=True):
-    # Meh
-    xmlString = etree.tostring(rootXml, pretty_print=True, encoding='unicode')
-    if addHeader:
-        xmlString = '<?xml version="1.0"?>\n' + xmlString
-    return xmlString
+    # From: https://stackoverflow.com/a/1206856/170413
+    # TODO(eacousineau): This does not preserve attribute order. Fix it.
+    dom = minidom.parseString(ET.tostring(rootXml))
+    xml_string = ""
+    lines = dom.toprettyxml(indent="  ").split("\n")
+    if lines and lines[0].startswith("<?xml") and not addHeader:
+        del lines[0]
+    # N.B. Minidom injects some pure-whitespace lines. Remove them.
+    return "\n".join(filter(lambda line: line.strip(), lines))
 
 
 def dict_sub(obj, keys):
@@ -19,8 +26,8 @@ def node_add(doc, sub):
     if sub is None:
         return None
     if type(sub) == str:
-        return etree.SubElement(doc, sub)
-    elif isinstance(sub, etree._Element):
+        return ET.SubElement(doc, sub)
+    elif isinstance(sub, ET.Element):
         doc.append(sub)  # This screws up the rest of the tree for prettyprint
         return sub
     else:
@@ -32,11 +39,7 @@ def pfloat(x):
 
 
 def xml_children(node):
-    children = node.getchildren()
-
-    def predicate(node):
-        return not isinstance(node, etree._Comment)
-    return list(filter(predicate, children))
+    return node.getchildren()
 
 
 def isstring(obj):
@@ -57,8 +60,8 @@ def to_yaml(obj):
         return obj
     elif hasattr(obj, 'to_yaml'):
         out = obj.to_yaml()
-    elif isinstance(obj, etree._Element):
-        out = etree.tostring(obj, pretty_print=True)
+    elif isinstance(obj, type(ET.Element)):
+        out = xml_string(obj, addHeader=False)
     elif type(obj) == dict:
         out = {}
         for (var, value) in obj.items():

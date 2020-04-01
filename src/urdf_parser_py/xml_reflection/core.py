@@ -1,8 +1,12 @@
-from urdf_parser_py.xml_reflection.basics import *
 import sys
 import copy
 
-# @todo Get rid of "import *"
+from urdf_parser_py.xml_reflection.basics import node_add
+from urdf_parser_py.xml_reflection.basics import xml_children
+from urdf_parser_py.xml_reflection.basics import xml_string
+from urdf_parser_py.xml_reflection.basics import YamlReflection
+from xml.etree import ElementTree as ET
+
 # @todo Make this work with decorators
 
 # Is this reflection or serialization? I think it's serialization...
@@ -580,7 +584,7 @@ class Object(YamlReflection):
         """ Creates an overarching tag and adds its contents to the node """
         tag = self.XML_REFL.tag
         assert tag is not None, "Must define 'tag' in reflection to use this function"  # noqa
-        doc = etree.Element(tag)
+        doc = ET.Element(tag)
         self.write_xml(doc)
         return doc
 
@@ -607,8 +611,8 @@ class Object(YamlReflection):
 
     @classmethod
     def from_xml_string(cls, xml_string):
-        node = etree.fromstring(xml_string)
-        path = Path(cls.XML_REFL.tag, tree=etree.ElementTree(node))
+        node = ET.fromstring(xml_string)
+        path = Path(cls.XML_REFL.tag, tree=ET.ElementTree(node))
         return cls.from_xml(node, path)
 
     @classmethod
@@ -660,8 +664,8 @@ class Object(YamlReflection):
     """ Compatibility """
 
     def parse(self, xml_string):
-        node = etree.fromstring(xml_string)
-        path = Path(self.XML_REFL.tag, tree=etree.ElementTree(node))
+        node = ET.fromstring(xml_string)
+        path = Path(self.XML_REFL.tag, tree=ET.ElementTree(node))
         self.read_xml(node, path)
         return self
 
