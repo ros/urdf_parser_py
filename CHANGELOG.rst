@@ -3,7 +3,7 @@ Changelog for package urdfdom_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 0.4.3 (2020-04-01)
------------
+------------------
 * Remove lxml dependency (`#57 <https://github.com/ros/urdf_parser_py/issues/57>`_)
 * Use setuptools instead of distutils (`#56 <https://github.com/ros/urdf_parser_py/issues/56>`_)
 * Bump CMake version to avoid CMP0048 (`#55 <https://github.com/ros/urdf_parser_py/issues/55>`_)
