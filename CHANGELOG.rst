@@ -2,6 +2,15 @@
 Changelog for package urdfdom_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.4.3 (2020-04-01)
+-----------
+* Remove lxml dependency (`#57 <https://github.com/ros/urdf_parser_py/issues/57>`_)
+* Use setuptools instead of distutils (`#56 <https://github.com/ros/urdf_parser_py/issues/56>`_)
+* Bump CMake version to avoid CMP0048 (`#55 <https://github.com/ros/urdf_parser_py/issues/55>`_)
+* update backward compatibility on visual and collisions (`#47 <https://github.com/ros/urdf_parser_py/issues/47>`_)
+* Allow name attribute in visual tag (`#31 <https://github.com/ros/urdf_parser_py/issues/31>`_)
+* Contributors: Kei Okada, Shane Loretz, gerkey
+
 0.4.2 (2020-01-22)
 ------------------
 * Add in support for the version tag. (`#52 <https://github.com/ros/urdf_parser_py/issues/52>`_)
