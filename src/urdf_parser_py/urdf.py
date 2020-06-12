@@ -471,10 +471,16 @@ xmlr.add_type('transmission',
 
 
 class Robot(xmlr.Object):
-    def __init__(self, name=None):
+    SUPPORTED_VERSIONS = ["1.0"]
+
+    def __init__(self, name=None, version="1.0"):
         self.aggregate_init()
 
         self.name = name
+        if version not in self.SUPPORTED_VERSIONS:
+            raise ValueError("Invalid version; only %s is supported" % (','.join(self.SUPPORTED_VERSIONS)))
+
+        self.version = version
         self.joints = []
         self.links = []
         self.materials = []
@@ -547,8 +553,8 @@ class Robot(xmlr.Object):
         if int(split[0]) < 0 or int(split[1]) < 0:
             raise ValueError("Version number must be positive")
 
-        if self.version != "1.0":
-            raise ValueError("Invalid version; only 1.0 is supported")
+        if self.version not in self.SUPPORTED_VERSIONS:
+            raise ValueError("Invalid version; only %s is supported" % (','.join(self.SUPPORTED_VERSIONS)))
 
     @classmethod
     def from_parameter_server(cls, key='robot_description'):
