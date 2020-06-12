@@ -550,18 +550,6 @@ class Robot(xmlr.Object):
         if self.version != "1.0":
             raise ValueError("Invalid version; only 1.0 is supported")
 
-    @classmethod
-    def from_parameter_server(cls, key='robot_description'):
-        """
-        Retrieve the robot model on the parameter server
-        and parse it to create a URDF robot structure.
-
-        Warning: this requires roscore to be running.
-        """
-        # Could move this into xml_reflection
-        import rospy
-        return cls.from_xml_string(rospy.get_param(key))
-
 
 xmlr.reflect(Robot, tag='robot', params=[
     xmlr.Attribute('name', str),
