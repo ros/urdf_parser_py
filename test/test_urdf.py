@@ -346,5 +346,21 @@ class LinkMultiVisualsAndCollisionsTest(unittest.TestCase):
         self.assertEqual(id(dummyObject), id(robot.links[0].collisions[0]))
 
 
+class TestCreateNew(unittest.TestCase):
+    def test_new_urdf(self):
+        testcase = urdf.URDF('robot_name').to_xml()
+        self.assertTrue('name' in testcase.keys())
+        self.assertTrue('version' in testcase.keys())
+        self.assertEqual(testcase.get('name'), 'robot_name')
+        self.assertEqual(testcase.get('version'), '1.0')
+
+    def test_new_urdf_with_version(self):
+        testcase = urdf.URDF('robot_name', '1.0').to_xml()
+        self.assertTrue('name' in testcase.keys())
+        self.assertTrue('version' in testcase.keys())
+        self.assertEqual(testcase.get('name'), 'robot_name')
+        self.assertEqual(testcase.get('version'), '1.0')
+
+
 if __name__ == '__main__':
     unittest.main()
