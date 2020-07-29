@@ -1,20 +1,20 @@
-#!/usr/bin/env python
-
 import sys
 import argparse
 
 from urdf_parser_py.urdf import URDF
 
-parser = argparse.ArgumentParser(usage='Load an URDF file')
-parser.add_argument('file', type=argparse.FileType('r'),
-                    help='File to load. Use - for stdin')
-parser.add_argument('-o', '--output', type=argparse.FileType('w'),
-                    default=None, help='Dump file to XML')
-args = parser.parse_args()
 
-robot = URDF.from_xml_string(args.file.read())
+def main():
+    parser = argparse.ArgumentParser(usage='Load an URDF file')
+    parser.add_argument('file', type=argparse.FileType('r'),
+                        help='File to load. Use - for stdin')
+    parser.add_argument('-o', '--output', type=argparse.FileType('w'),
+                        default=None, help='Dump file to XML')
+    args = parser.parse_args()
 
-print(robot)
+    robot = URDF.from_xml_string(args.file.read())
 
-if args.output is not None:
-    args.output.write(robot.to_xml_string())
+    print(robot)
+
+    if args.output is not None:
+        args.output.write(robot.to_xml_string())
