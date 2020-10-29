@@ -2,6 +2,11 @@
 Changelog for package urdfdom_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Replace deprecated function (`#60 <https://github.com/ros/urdf_parser_py/issues/60>`_)
+* Contributors: Roel
+
 0.4.3 (2020-04-01)
 ------------------
 * Remove lxml dependency (`#57 <https://github.com/ros/urdf_parser_py/issues/57>`_)
