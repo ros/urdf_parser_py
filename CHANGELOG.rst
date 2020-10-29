@@ -2,8 +2,8 @@
 Changelog for package urdfdom_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.4.4 (2020-10-29)
+------------------
 * Replace deprecated function (`#60 <https://github.com/ros/urdf_parser_py/issues/60>`_)
 * Contributors: Roel
 
