@@ -2,6 +2,11 @@
 Changelog for package urdfdom_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Make sure to add the version when creating a new URDF. (`#62 <https://github.com/ros/urdf_parser_py/issues/62>`_) (`#66 <https://github.com/ros/urdf_parser_py/issues/66>`_)
+* Contributors: Chris Lalancette
+
 0.4.4 (2020-10-29)
 ------------------
 * Replace deprecated function (`#60 <https://github.com/ros/urdf_parser_py/issues/60>`_)
