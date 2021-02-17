@@ -283,6 +283,19 @@ class TestURDFParser(unittest.TestCase):
         robot.add_link(link)
         self.xml_and_compare(robot, xml)
 
+    def test_collision_with_name(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test" version="1.0">
+  <link name="link">
+    <collision name="alice">
+      <geometry>
+        <cylinder length="1" radius="1"/>
+      </geometry>
+    </collision>
+  </link>
+</robot>'''
+        self.parse_and_compare(xml)
+
     def test_version_attribute_not_enough_dots(self):
         xml = '''<?xml version="1.0"?>
 <robot name="test" version="1">
