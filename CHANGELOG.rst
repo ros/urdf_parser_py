@@ -2,8 +2,8 @@
 Changelog for package urdfdom_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.1.0 (2021-03-15)
+------------------
 * Use a Python entry point for 'display_urdf' (`#64 <https://github.com/ros/urdf_parser_py/issues/64>`_)
 * Move the 'display_urdf' script into the Python module (`#64 <https://github.com/ros/urdf_parser_py/issues/64>`_)
 * Make 'file' argument to display_urdf required (`#64 <https://github.com/ros/urdf_parser_py/issues/64>`_)
