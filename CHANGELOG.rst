@@ -2,6 +2,16 @@
 Changelog for package urdfdom_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Use a Python entry point for 'display_urdf' (`#64 <https://github.com/ros/urdf_parser_py/issues/64>`_)
+* Move the 'display_urdf' script into the Python module (`#64 <https://github.com/ros/urdf_parser_py/issues/64>`_)
+* Make 'file' argument to display_urdf required (`#64 <https://github.com/ros/urdf_parser_py/issues/64>`_)
+* Make sure to add the version when creating a new URDF. (`#62 <https://github.com/ros/urdf_parser_py/issues/62>`_)
+* Remove the from_parameter_server method from urdf.py for ROS 2. (`#63 <https://github.com/ros/urdf_parser_py/issues/63>`_)
+* Silence pytest warnings when running locally. (`#61 <https://github.com/ros/urdf_parser_py/issues/61>`_)
+* Contributors: Chris Lalancette, Scott K Logan
+
 1.0.0 (2020-03-10)
 ------------------
 * Add in support for the version tag. (`#52 <https://github.com/ros/urdf_parser_py/issues/52>`_) (`#54 <https://github.com/ros/urdf_parser_py/issues/54>`_)
