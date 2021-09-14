@@ -149,12 +149,14 @@ xmlr.add_type('geometric', GeometricType())
 
 
 class Collision(xmlr.Object):
-    def __init__(self, geometry=None, origin=None):
+    def __init__(self, geometry=None, origin=None, name=None):
         self.geometry = geometry
+        self.name = name
         self.origin = origin
 
 
 xmlr.reflect(Collision, tag='collision', params=[
+    xmlr.Attribute('name', str, False),
     origin_element,
     xmlr.Element('geometry', 'geometric')
 ])
