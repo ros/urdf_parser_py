@@ -2,6 +2,11 @@
 Changelog for package urdfdom_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Support name attribute for collisions (`#67 <https://github.com/ros/urdf_parser_py/issues/67>`_)
+* Contributors: Nick Lamprianidis
+
 0.4.5 (2020-12-04)
 ------------------
 * Make sure to add the version when creating a new URDF. (`#62 <https://github.com/ros/urdf_parser_py/issues/62>`_) (`#66 <https://github.com/ros/urdf_parser_py/issues/66>`_)
