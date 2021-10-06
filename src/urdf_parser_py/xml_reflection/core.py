@@ -26,10 +26,13 @@ def reflect(cls, *args, **kwargs):
 # 'pre_dump' and 'post_load'?
 # When dumping to yaml, include tag name?
 
+
 # How to incorporate line number and all that jazz?
 def on_error_stderr(message):
     """ What to do on an error. This can be changed to raise an exception. """
     sys.stderr.write(message + '\n')
+
+
 on_error = on_error_stderr
 
 
@@ -107,7 +110,7 @@ class Path(object):
         self.parent = parent
         self.tag = tag
         self.suffix = suffix
-        self.tree = tree # For validating general path (getting true XML path)
+        self.tree = tree  # For validating general path (getting true XML path)
 
     def __str__(self):
         if self.parent is not None:
@@ -117,6 +120,7 @@ class Path(object):
                 return "/{}{}".format(self.tag, self.suffix)
             else:
                 return self.suffix
+
 
 class ParseError(Exception):
     def __init__(self, e, path):
@@ -475,11 +479,11 @@ class Reflection(object):
             return attr_path
 
         def get_element_path(element):
-            element_path = Path(element.xml_var, parent = path)
+            element_path = Path(element.xml_var, parent=path)
             # Add an index (allow this to be overriden)
             if element.is_aggregate:
                 values = obj.get_aggregate_list(element.xml_var)
-                index = 1 + len(values) # 1-based indexing for W3C XPath
+                index = 1 + len(values)  # 1-based indexing for W3C XPath
                 element_path.suffix = "[{}]".format(index)
             return element_path
 
@@ -529,7 +533,7 @@ class Reflection(object):
             except ParseError:
                 raise
             except Exception as e:
-                raise ParseError(e, path) # get_attr_path(attribute.xml_var)
+                raise ParseError(e, path)  # get_attr_path(attribute.xml_var)
 
         for element in map(self.element_map.get, unset_scalars):
             try:
@@ -537,7 +541,7 @@ class Reflection(object):
             except ParseError:
                 raise
             except Exception as e:
-                raise ParseError(e, path) # get_element_path(element)
+                raise ParseError(e, path)  # get_element_path(element)
 
         if is_final:
             for xml_var in info.attributes:

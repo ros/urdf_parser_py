@@ -6,6 +6,7 @@ from xml.etree import ElementTree as ET
 from xml.dom import minidom
 
 
+
 def xml_string(rootXml, addHeader=True):
     # From: https://stackoverflow.com/a/1206856/170413
     # TODO(eacousineau): This does not preserve attribute order. Fix it.

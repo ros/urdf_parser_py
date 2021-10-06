@@ -339,6 +339,7 @@ class Joint(xmlr.Object):
     @joint_type.setter
     def joint_type(self, value): self.type = value
 
+
 xmlr.reflect(Joint, tag='joint', params=[
     name_attribute,
     xmlr.Attribute('type', str),
@@ -486,16 +487,17 @@ xmlr.add_type('transmission',
 # add the vector2 type
 get_type('vector2')
 
+
 class Tactile(xmlr.Object):
     def __init__(self, channel=None):
         self.channel = channel
 
 
 class TactileArrayElement(xmlr.Object):
-    ROWMAJOR="row-major"
-    COLUMNMAJOR="column-major"
-    def __init__(self, rows=None, cols=None, order=None,
-        size=None, spacing=None, offset=None):
+    ROWMAJOR = "row-major"
+    COLUMNMAJOR = "column-major"
+
+    def __init__(self, rows=None, cols=None, order=None, size=None, spacing=None, offset=None):
         self.rows = rows
         self.cols = cols
         self.order = order
@@ -509,10 +511,11 @@ class TactileArrayElement(xmlr.Object):
         # fix int here, it appears to not be possible in init because params are not set at init
         self.rows = int(self.rows) if self.rows is not None else None
         self.cols = int(self.cols) if self.cols is not None else None
-        assert self.order in [self.ROWMAJOR, self.COLUMNMAJOR], ("order should be " + str(self.ROWMAJOR) + " or " + str(self.COLUMNMAJOR))
+        assert self.order in [self.ROWMAJOR, self.COLUMNMAJOR], ("order should be " +
+                                                                 str(self.ROWMAJOR) + " or " + str(self.COLUMNMAJOR))
 
 
-#xmlr.add_type('geometric', TactileArrayElement())
+# xmlr.add_type('geometric', TactileArrayElement())
 
 xmlr.reflect(TactileArrayElement, tag='tactile_array_element', params=[
     xmlr.Attribute('rows', float),
@@ -529,6 +532,7 @@ class TactileArray(Tactile):
         Tactile.__init__(self, channel=channel)
         self.array = array
         self.taxel = None
+
     # the test is very important in DuckTyping, if no fail, won't test the second type
     def check_valid(self):
         assert self.array is not None
@@ -550,17 +554,18 @@ class TactileTaxelElement(xmlr.Object):
 
 
 xmlr.reflect(TactileTaxelElement, tag='array', params=[
-    xmlr.Attribute('idx', float), 
+    xmlr.Attribute('idx', float),
     xmlr.Attribute('xyz', 'vector3', False, default=[0, 0, 0]),
     xmlr.Attribute('rpy', 'vector3', False, default=[0, 0, 0]),
     xmlr.Element('geometry', 'geometric'),
 ])
 
+
 class TactileTaxels(Tactile):
     def __init__(self, channel=None, taxel=None):
         Tactile.__init__(self, channel=channel)
         self.aggregate_init()
-        self.taxels=[]
+        self.taxels = []
         if taxel:
             self.taxel = taxel
         self.array = None
@@ -578,11 +583,11 @@ class TactileTaxels(Tactile):
             self.taxels.append(taxel)
         if taxel:
             self.add_aggregate('taxel', taxel)
-    
+
     # the test is very important in DuckTyping, if no fail, won't test the second type
     def check_valid(self):
         assert self.taxel is not None
-        
+
     # Properties setter getter
     taxel = property(__get_taxel, __set_taxel)
 
@@ -602,8 +607,7 @@ xmlr.add_type('tactile',
 class Sensor(xmlr.Object):
     """ UBI Sensor Base """
 
-    def __init__(self, name=None, group=None, update_rate=None,
-        parent=None, origin=None):
+    def __init__(self, name=None, group=None, update_rate=None, parent=None, origin=None):
         self.name = name
         self.group = group
         self.update_rate = update_rate
@@ -614,20 +618,20 @@ class Sensor(xmlr.Object):
 
 class SensorTactile(Sensor):
     """ UBI Sensor format """
-             
-    def __init__(self, name=None, group=None, update_rate=None,
-        parent=None, origin=None, tactile=None):
+
+    def __init__(self, name=None, group=None, update_rate=None, parent=None, origin=None, tactile=None):
         Sensor.__init__(self, name, group, update_rate, parent, origin)
         # one cannot just pass self.tactile to a sensor initialization
-        # reflect needs the parameter to be part of the object so 
+        # reflect needs the parameter to be part of the object so
         # member tactile is nedded
-        self.tactile=tactile
-        self.sensor=self.tactile
+        self.tactile = tactile
+        self.sensor = self.tactile
 
     def check_valid(self):
         # this test cannot be generalized to test sensor in the base class
         # because the check occurs before the parent element is filled
         assert self.tactile is not None, "no sensor defined"
+
 
 xmlr.reflect(SensorTactile, tag='sensor_tactile', params=[
     name_attribute,
@@ -640,15 +644,15 @@ xmlr.reflect(SensorTactile, tag='sensor_tactile', params=[
 
 
 class RayElement(xmlr.Object):
-    def __init__(self, samples=None, resolution=None,
-        min_angle=None, max_angle=None):
-        self.samples = int(samples) if samples is not None else None 
+    def __init__(self, samples=None, resolution=None, min_angle=None, max_angle=None):
+        self.samples = int(samples) if samples is not None else None
         self.resolution = int(resolution) if resolution is not None else None
         self.min_angle = min_angle
         self.max_angle = max_angle
 
     def check_valid(self):
         assert self.samples is not None
+
 
 xmlr.reflect(RayElement, tag='ray_element', params=[
     xmlr.Attribute('samples', float),
@@ -660,8 +664,8 @@ xmlr.reflect(RayElement, tag='ray_element', params=[
 
 class Ray(xmlr.Object):
     def __init__(self, horizontal=None, vertical=None):
-        self.horizontal=horizontal
-        self.vertical=vertical
+        self.horizontal = horizontal
+        self.vertical = vertical
 
     def check_valid(self):
         assert self.horizontal is not None and self.vertical is not None
@@ -675,16 +679,15 @@ xmlr.reflect(Ray, tag='ray', params=[
 
 class SensorRay(Sensor):
     """ UBI Sensor format """
-             
-    def __init__(self, name=None, group=None, update_rate=None,
-        parent=None, origin=None, ray=None):
+
+    def __init__(self, name=None, group=None, update_rate=None, parent=None, origin=None, ray=None):
         Sensor.__init__(self, name, group, update_rate, parent, origin)
         # one cannot just pass self.ray to a sensor initialization
-        # reflect needs the parameter to be part of the object so 
+        # reflect needs the parameter to be part of the object so
         # member ray is nedded
         self.ray = ray
         self.sensor = self.ray
-    
+
     def check_valid(self):
         # this test cannot be generalized to test sensor in the base class
         # because the check occurs before the parent element is filled
@@ -702,9 +705,8 @@ xmlr.reflect(SensorRay, tag='sensor_ray', params=[
 
 
 class CameraImage(xmlr.Object):
-    def __init__(self, width=None, height=None,
-        format="R8G8B8", hfov=None, near=None, far=None):
-        self.width = int(width) if width is not None else None 
+    def __init__(self, width=None, height=None, format="R8G8B8", hfov=None, near=None, far=None):
+        self.width = int(width) if width is not None else None
         self.height = int(height) if height is not None else None
         # format is optional: defaults to R8G8B8), but can be
         # (L8|R8G8B8|B8G8R8|BAYER_RGGB8|BAYER_BGGR8|BAYER_GBRG8|BAYER_GRBG8)
@@ -715,6 +717,7 @@ class CameraImage(xmlr.Object):
 
     def check_valid(self):
         assert self.width is not None
+
 
 xmlr.reflect(CameraImage, tag='image', params=[
     xmlr.Attribute('width', float),
@@ -733,6 +736,7 @@ class Camera(xmlr.Object):
     def check_valid(self):
         assert self.image is not None
 
+
 xmlr.reflect(Camera, tag='camera', params=[
     xmlr.Element('image', CameraImage, False)
 ])
@@ -740,16 +744,15 @@ xmlr.reflect(Camera, tag='camera', params=[
 
 class SensorCamera(Sensor):
     """ UBI Sensor format """
-             
-    def __init__(self, name=None, group=None, update_rate=None,
-        parent=None, origin=None, camera=None):
+
+    def __init__(self, name=None, group=None, update_rate=None, parent=None, origin=None, camera=None):
         Sensor.__init__(self, name, group, update_rate, parent, origin)
         # one cannot just pass self.camera to a sensor initialization
-        # reflect needs the parameter to be part of the object so 
+        # reflect needs the parameter to be part of the object so
         # member camera is nedded
         self.camera = camera
         self.sensor = self.camera
-    
+
     def check_valid(self):
         # this test cannot be generalized to test sensor in the base class
         # because the check occurs before the parent element is filled
@@ -768,6 +771,7 @@ xmlr.reflect(SensorCamera, tag='sensor_camera', params=[
 
 class UnknownType(xmlr.ValueType):
     name = "unknown"
+
     def from_xml(self, node, path):
         self.node = node
         return self
@@ -780,9 +784,11 @@ class UnknownType(xmlr.ValueType):
         for (attrib_key, attrib_value) in self.node.attrib.items():
             node.set(attrib_key, attrib_value)
 
+
 xmlr.add_type('sensor',
               xmlr.DuckTypedFactory('sensor',
                                     [SensorCamera, SensorRay, SensorTactile, UnknownType()]))
+
 
 class Robot(xmlr.Object):
     SUPPORTED_VERSIONS = ["1.0"]
@@ -825,7 +831,7 @@ class Robot(xmlr.Object):
             self.link_map[link.name] = link
         elif typeName == 'sensor':
             sensor = elem
-            if not isinstance (sensor , UnknownType):
+            if not isinstance(sensor, UnknownType):
                 self.sensor_map[sensor.name] = sensor
 
     def add_link(self, link):

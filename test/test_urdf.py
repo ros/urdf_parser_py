@@ -1,4 +1,3 @@
-
 import unittest
 import mock
 import os
@@ -13,6 +12,7 @@ from xml.dom import minidom  # noqa
 from xml_matching import xml_matches  # noqa
 from urdf_parser_py import urdf  # noqa
 import urdf_parser_py.xml_reflection as xmlr
+
 
 class ParseException(xmlr.core.ParseError):
     def __init__(self, e = "", path = ""):
@@ -38,7 +38,7 @@ class TestURDFParser(unittest.TestCase):
         self.assertTrue(xml_matches(robot_xml, orig_xml))
 
     def test_sensor_unknown(self):
-        # TODO currently  <unknown/> not added when unknown sensors  
+        # TODO currently  <unknown/> not added when unknown sensors
         xml = '''<?xml version="1.0"?>
 <robot name="test" version="1.0">
    <sensor name="unknown sensor" group="" update_rate="20.0">
@@ -51,7 +51,7 @@ class TestURDFParser(unittest.TestCase):
         self.parse_and_compare(xml)
         robot = self.parse(xml)
         sensor = robot.sensors[0]
-        self.assertEqual(sensor.name , 'unknown')
+        self.assertEqual(sensor.name, 'unknown')
 
     def test_sensor_ray(self):
         xml = '''<?xml version="1.0"?>
@@ -101,7 +101,6 @@ class TestURDFParser(unittest.TestCase):
         robot.add_aggregate('sensor', sensor)
         self.xml_and_compare(robot, xml)
 
-
     def test_sensor_tactile_taxel(self):
         xml = '''<?xml version="1.0"?>
 <robot name="test" version="1.0">
@@ -125,7 +124,8 @@ class TestURDFParser(unittest.TestCase):
         self.parse_and_compare(xml)
 
         robot = urdf.Robot(name='test', version='1.0')
-        meshgeometry = urdf.Mesh(filename="package://sensor_description/model/my_tactiles/tax_lower.stl", scale=[0.00101, 0.00101, 0.00101])
+        meshgeometry = urdf.Mesh(filename="package://sensor_description/model/my_tactiles/tax_lower.stl",
+                                 scale=[0.00101, 0.00101, 0.00101])
         taxelelement = urdf.TactileTaxelElement(0, [0.02, 0.03, 0.04], [0.5, 0.6, 0.7], meshgeometry)
         taxel = urdf.TactileTaxels(channel='my_channel')
         taxel.add_aggregate('taxel', taxelelement)
@@ -657,6 +657,7 @@ class LinkMultiVisualsAndCollisionsTest(unittest.TestCase):
         robot_xml = minidom.parseString(robot_xml_string)
         orig_xml = minidom.parseString(self.xml)
         self.assertTrue(xml_matches(robot_xml, orig_xml))
+
 
 class TestCreateNew(unittest.TestCase):
     def test_new_urdf(self):
