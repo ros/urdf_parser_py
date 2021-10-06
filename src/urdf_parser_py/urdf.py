@@ -496,8 +496,8 @@ class TactileArrayElement(xmlr.Object):
     COLUMNMAJOR="column-major"
     def __init__(self, rows=None, cols=None, order=None,
         size=None, spacing=None, offset=None):
-        self.rows = int(rows) if rows is not None else None
-        self.cols = int(cols) if cols is not None else None
+        self.rows = rows
+        self.cols = cols
         self.order = order
         self.size = size
         self.offset = offset
@@ -506,6 +506,9 @@ class TactileArrayElement(xmlr.Object):
     def check_valid(self):
         if self.spacing is None:
             self.spacing = self.size
+        # fix int here, it appears to not be possible in init because params are not set at init
+        self.rows = int(self.rows) if self.rows is not None else None
+        self.cols = int(self.cols) if self.cols is not None else None
         assert self.order in [self.ROWMAJOR, self.COLUMNMAJOR], ("order should be " + str(self.ROWMAJOR) + " or " + str(self.COLUMNMAJOR))
 
 
