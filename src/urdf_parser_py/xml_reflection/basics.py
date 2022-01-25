@@ -1,6 +1,6 @@
 import string
 import yaml
-import collections
+import collections.abc
 from lxml import etree
 
 def xml_string(rootXml, addHeader=True):
@@ -66,7 +66,7 @@ def to_yaml(obj):
     elif hasattr(obj, 'tolist'):
         # For numpy objects
         out = to_yaml(obj.tolist())
-    elif isinstance(obj, collections.Iterable):
+    elif isinstance(obj, collections.abc.Iterable):
         out = [to_yaml(item) for item in obj]
     else:
         out = str(obj)
