@@ -2,6 +2,12 @@
 Changelog for package urdfdom_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.2.0 (2022-03-30)
+------------------
+* Fix the binary install location. (`#74 <https://github.com/ros/urdf_parser_py/issues/74>`_)
+* Get Iterable from collections.abc. (`#73 <https://github.com/ros/urdf_parser_py/issues/73>`_)
+* Contributors: Chris Lalancette
+
 1.1.0 (2021-03-15)
 ------------------
 * Use a Python entry point for 'display_urdf' (`#64 <https://github.com/ros/urdf_parser_py/issues/64>`_)

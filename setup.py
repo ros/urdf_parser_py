@@ -5,7 +5,7 @@ package_name = 'urdfdom_py'
 
 setup(
     name=package_name,
-    version='1.1.0',
+    version='1.2.0',
     package_dir={'': 'src'},
     packages=['urdf_parser_py', 'urdf_parser_py.xml_reflection'],
     data_files=[
