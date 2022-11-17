@@ -4,18 +4,18 @@
   <version>1.2.0</version>
   <description>Python implementation of the URDF parser.</description>
 
+  <maintainer email="clalancette@openrobotics.org">Chris Lalancette</maintainer>
+
   <license>BSD</license>
 
-  <author>Thomas Moulard</author>
-  <author>David Lu</author>
-  <author>Kelsey Hawkins</author>
   <author>Antonio El Khoury</author>
+  <author>David Lu</author>
   <author>Eric Cousineau</author>
   <author email="isucan@gmail.com">Ioan Sucan</author>
   <author email="jacquelinekay1@gmail.com">Jackie Kay</author>
-
-  <maintainer email="clalancette@osrfoundation.org">Chris Lalancette</maintainer>
-  <maintainer email="sloretz@osrfoundation.org">Shane Loretz</maintainer>
+  <author>Kelsey Hawkins</author>
+  <author email="sloretz@osrfoundation.org">Shane Loretz</author>
+  <author>Thomas Moulard</author>
 
   <url type="website">http://wiki.ros.org/urdfdom_py</url>
   <url type="bugtracker">https://github.com/ros/urdf_parser_py/issues</url>
