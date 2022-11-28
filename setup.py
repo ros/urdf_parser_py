@@ -22,6 +22,8 @@ setup(
         'Programming Language :: Python',
         'Topic :: Software Development',
     ],
+    maintainer='Chris Lalancette',
+    maintainer_email='clalancette@openrobotics.org',
     description='Python implementation of the URDF parser.',
     license='BSD',
     tests_require=['pytest'],
