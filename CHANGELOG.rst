@@ -2,6 +2,13 @@
 Changelog for package urdfdom_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Switch to unittest.mock (`#78 <https://github.com/ros/urdf_parser_py/issues/78>`_)
+* Add BSD LICENSE file (`#77 <https://github.com/ros/urdf_parser_py/issues/77>`_)
+* Update Maintainers (`#76 <https://github.com/ros/urdf_parser_py/issues/76>`_)
+* Contributors: Audrow Nash, Scott K Logan, Silvio Traversaro
+
 1.2.0 (2022-03-30)
 ------------------
 * Fix the binary install location. (`#74 <https://github.com/ros/urdf_parser_py/issues/74>`_)
