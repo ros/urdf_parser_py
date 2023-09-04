@@ -237,10 +237,10 @@ class TestURDFParser(unittest.TestCase):
 
         robot = urdf.Robot(name='test', version='1.0')
         link = urdf.Link(name='link')
-        link.visual = urdf.Visual(geometry=urdf.Cylinder(length=1, radius=1),
-                                  material=urdf.Material(name='mat'))
-        link.visual = urdf.Visual(geometry=urdf.Cylinder(length=4, radius=0.5),
-                                  material=urdf.Material(name='mat2'))
+        link.add_visual(urdf.Visual(geometry=urdf.Cylinder(length=1, radius=1),
+                                  material=urdf.Material(name='mat')))
+        link.add_visual(urdf.Visual(geometry=urdf.Cylinder(length=4, radius=0.5),
+                                  material=urdf.Material(name='mat2')))
         robot.add_link(link)
         self.xml_and_compare(robot, xml)
 
@@ -264,8 +264,8 @@ class TestURDFParser(unittest.TestCase):
 
         robot = urdf.Robot(name='test', version='1.0')
         link = urdf.Link(name='link')
-        link.collision = urdf.Collision(geometry=urdf.Cylinder(length=1, radius=1))
-        link.collision = urdf.Collision(geometry=urdf.Cylinder(length=4, radius=0.5))
+        link.add_collision(urdf.Collision(geometry=urdf.Cylinder(length=1, radius=1)))
+        link.add_collision(urdf.Collision(geometry=urdf.Cylinder(length=4, radius=0.5)))
         robot.add_link(link)
         self.xml_and_compare(robot, xml)
 
@@ -418,7 +418,7 @@ class LinkMultiVisualsAndCollisionsTest(unittest.TestCase):
         self.assertEqual(None, robot.links[1].visual)
 
         dummyObject = set()
-        robot.links[0].visual = dummyObject
+        robot.links[0].visuals[0] = dummyObject
         self.assertEqual(id(dummyObject), id(robot.links[0].visuals[0]))
 
     def test_multi_collision_access(self):
@@ -430,18 +430,18 @@ class LinkMultiVisualsAndCollisionsTest(unittest.TestCase):
         self.assertEqual(None, robot.links[1].collision)
 
         dummyObject = set()
-        robot.links[0].collision = dummyObject
+        robot.links[0].collisions[0] = dummyObject
         self.assertEqual(id(dummyObject), id(robot.links[0].collisions[0]))
 
     def test_xml_and_urdfdom_robot_compatible_with_kinetic(self):
         robot = urdf.Robot(name='test', version='1.0')
         link = urdf.Link(name='link')
-        link.visual = urdf.Visual(geometry=urdf.Cylinder(length=1, radius=1),
-                                  material=urdf.Material(name='mat'))
-        link.visual = urdf.Visual(geometry=urdf.Cylinder(length=4, radius=0.5),
-                                  material=urdf.Material(name='mat2'))
-        link.collision = urdf.Collision(geometry=urdf.Cylinder(length=1, radius=1))
-        link.collision = urdf.Collision(geometry=urdf.Cylinder(length=4, radius=0.5))
+        link.add_visual(urdf.Visual(geometry=urdf.Cylinder(length=1, radius=1),
+                                  material=urdf.Material(name='mat')))
+        link.add_visual(urdf.Visual(geometry=urdf.Cylinder(length=4, radius=0.5),
+                                  material=urdf.Material(name='mat2')))
+        link.add_collision(urdf.Collision(geometry=urdf.Cylinder(length=1, radius=1)))
+        link.add_collision(urdf.Collision(geometry=urdf.Cylinder(length=4, radius=0.5)))
         robot.add_link(link)
         link = urdf.Link(name='link2')
         robot.add_link(link)

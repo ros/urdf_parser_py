@@ -371,11 +371,19 @@ class Link(xmlr.Object):
     def __set_visual(self, visual):
         """Set the first visual."""
         if self.visuals:
-            self.visuals[0] = visual
-        else:
-            self.visuals.append(visual)
+            self.remove_aggregate(self.visuals[0])
         if visual:
             self.add_aggregate('visual', visual)
+
+    def add_visual(self, visual):
+        """Add a visual element to the link."""
+        self.visuals.append(visual)
+        self.add_aggregate('visual', self.visuals[-1])
+
+    def add_collision(self, collision):
+        """Add a collision element for the link."""
+        self.collisions.append(collision)
+        self.add_aggregate('collision', self.collisions[-1])
 
     def __get_collision(self):
         """Return the first collision or None."""
@@ -385,9 +393,7 @@ class Link(xmlr.Object):
     def __set_collision(self, collision):
         """Set the first collision."""
         if self.collisions:
-            self.collisions[0] = collision
-        else:
-            self.collisions.append(collision)
+            self.remove_aggregate(self.collisions[0])
         if collision:
             self.add_aggregate('collision', collision)
 
