@@ -334,6 +334,7 @@ class Joint(xmlr.Object):
     @joint_type.setter
     def joint_type(self, value): self.type = value
 
+
 xmlr.reflect(Joint, tag='joint', params=[
     name_attribute,
     xmlr.Attribute('type', str),
@@ -377,13 +378,19 @@ class Link(xmlr.Object):
 
     def add_visual(self, visual):
         """Add a visual element to the link."""
-        self.visuals.append(visual)
-        self.add_aggregate('visual', self.visuals[-1])
+        self.add_aggregate('visual', visual)
+
+    def remove_visual(self, visual):
+        """Removes the provided visual object."""
+        self.remove_aggregate(visual)
 
     def add_collision(self, collision):
         """Add a collision element for the link."""
-        self.collisions.append(collision)
-        self.add_aggregate('collision', self.collisions[-1])
+        self.add_aggregate('collision', collision)
+
+    def remove_collision(self, collision):
+        """Removes a provided collision object."""
+        self.remove_aggregate(collision)
 
     def __get_collision(self):
         """Return the first collision or None."""
@@ -492,7 +499,8 @@ class Robot(xmlr.Object):
 
         self.name = name
         if version not in self.SUPPORTED_VERSIONS:
-            raise ValueError("Invalid version; only %s is supported" % (','.join(self.SUPPORTED_VERSIONS)))
+            raise ValueError("Invalid version; only %s is supported" %
+                             (','.join(self.SUPPORTED_VERSIONS)))
 
         self.version = version
         self.joints = []
@@ -568,7 +576,8 @@ class Robot(xmlr.Object):
             raise ValueError("Version number must be positive")
 
         if self.version not in self.SUPPORTED_VERSIONS:
-            raise ValueError("Invalid version; only %s is supported" % (','.join(self.SUPPORTED_VERSIONS)))
+            raise ValueError("Invalid version; only %s is supported" %
+                             (','.join(self.SUPPORTED_VERSIONS)))
 
 
 xmlr.reflect(Robot, tag='robot', params=[
