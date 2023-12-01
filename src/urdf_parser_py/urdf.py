@@ -334,6 +334,7 @@ class Joint(xmlr.Object):
     @joint_type.setter
     def joint_type(self, value): self.type = value
 
+
 xmlr.reflect(Joint, tag='joint', params=[
     name_attribute,
     xmlr.Attribute('type', str),
@@ -355,8 +356,12 @@ class Link(xmlr.Object):
         self.aggregate_init()
         self.name = name
         self.visuals = []
+        if visual:
+            self.visual = visual
         self.inertial = inertial
         self.collisions = []
+        if collision:
+            self.collision = collision
         self.origin = origin
 
     def __get_visual(self):
@@ -367,9 +372,25 @@ class Link(xmlr.Object):
     def __set_visual(self, visual):
         """Set the first visual."""
         if self.visuals:
-            self.visuals[0] = visual
-        else:
-            self.visuals.append(visual)
+            self.remove_aggregate(self.visuals[0])
+        if visual:
+            self.add_aggregate('visual', visual)
+
+    def add_visual(self, visual):
+        """Add a visual element to the link."""
+        self.add_aggregate('visual', visual)
+
+    def remove_visual(self, visual):
+        """Removes the provided visual object."""
+        self.remove_aggregate(visual)
+
+    def add_collision(self, collision):
+        """Add a collision element for the link."""
+        self.add_aggregate('collision', collision)
+
+    def remove_collision(self, collision):
+        """Removes a provided collision object."""
+        self.remove_aggregate(collision)
 
     def __get_collision(self):
         """Return the first collision or None."""
@@ -379,9 +400,9 @@ class Link(xmlr.Object):
     def __set_collision(self, collision):
         """Set the first collision."""
         if self.collisions:
-            self.collisions[0] = collision
-        else:
-            self.collisions.append(collision)
+            self.remove_aggregate(self.collisions[0])
+        if collision:
+            self.add_aggregate('collision', collision)
 
     # Properties for backwards compatibility
     visual = property(__get_visual, __set_visual)
@@ -478,7 +499,8 @@ class Robot(xmlr.Object):
 
         self.name = name
         if version not in self.SUPPORTED_VERSIONS:
-            raise ValueError("Invalid version; only %s is supported" % (','.join(self.SUPPORTED_VERSIONS)))
+            raise ValueError("Invalid version; only %s is supported" %
+                             (','.join(self.SUPPORTED_VERSIONS)))
 
         self.version = version
         self.joints = []
@@ -554,7 +576,8 @@ class Robot(xmlr.Object):
             raise ValueError("Version number must be positive")
 
         if self.version not in self.SUPPORTED_VERSIONS:
-            raise ValueError("Invalid version; only %s is supported" % (','.join(self.SUPPORTED_VERSIONS)))
+            raise ValueError("Invalid version; only %s is supported" %
+                             (','.join(self.SUPPORTED_VERSIONS)))
 
 
 xmlr.reflect(Robot, tag='robot', params=[
