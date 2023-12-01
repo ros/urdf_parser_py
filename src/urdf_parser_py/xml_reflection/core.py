@@ -613,7 +613,7 @@ class Object(YamlReflection):
 
     @classmethod
     def from_xml_file(cls, file_path):
-        xml_string = open(file_path, 'r').read()
+        xml_string = open(file_path, 'rb').read()
         return cls.from_xml_string(xml_string)
 
     # Confusing distinction between loading code in object and reflection

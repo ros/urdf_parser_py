@@ -6,7 +6,7 @@ from urdf_parser_py.urdf import URDF
 
 def main():
     parser = argparse.ArgumentParser(usage='Load an URDF file')
-    parser.add_argument('file', type=argparse.FileType('r'),
+    parser.add_argument('file', type=argparse.FileType('rb'),
                         help='File to load. Use - for stdin')
     parser.add_argument('-o', '--output', type=argparse.FileType('w'),
                         default=None, help='Dump file to XML')

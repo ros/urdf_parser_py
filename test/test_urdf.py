@@ -289,6 +289,21 @@ class LinkOriginTestCase(unittest.TestCase):
         self.assertEqual(origin.xyz, [1, 2, 3])
         self.assertEqual(origin.rpy, [0, 0, 0])
 
+    def test_xml_with_UTF8_encoding(self):
+        xml = b'''<?xml version="1.0" encoding="UTF-8"?>
+<robot name="test">
+  <link name="test_link">
+    <inertial>
+      <mass value="10.0"/>
+      <origin xyz="1 2 3"/>
+    </inertial>
+  </link>
+</robot>'''
+        robot = self.parse(xml)
+        origin = robot.links[0].inertial.origin
+        self.assertEqual(origin.xyz, [1, 2, 3])
+        self.assertEqual(origin.rpy, [0, 0, 0])
+
 
 class LinkMultiVisualsAndCollisionsTest(unittest.TestCase):
 
