@@ -273,6 +273,7 @@ class LinkOriginTestCase(unittest.TestCase):
         origin = robot.links[0].inertial.origin
         self.assertEqual(origin.xyz, [0, 0, 0])
         self.assertEqual(origin.rpy, [0, 0, 0])
+        self.assertEqual(origin.quat_xyzw, None)
 
     def test_robot_link_defaults_xyz_set(self):
         xml = '''<?xml version="1.0"?>
@@ -288,7 +289,40 @@ class LinkOriginTestCase(unittest.TestCase):
         origin = robot.links[0].inertial.origin
         self.assertEqual(origin.xyz, [1, 2, 3])
         self.assertEqual(origin.rpy, [0, 0, 0])
+        self.assertEqual(origin.quat_xyzw, None)
+        
+    def test_robot_link_defaults_xyz_rpy_set(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test">
+  <link name="test_link">
+    <inertial>
+      <mass value="10.0"/>
+      <origin xyz="1 2 3" rpy="1 2 3"/>
+    </inertial>
+  </link>
+</robot>'''
+        robot = self.parse(xml)
+        origin = robot.links[0].inertial.origin
+        self.assertEqual(origin.xyz, [1, 2, 3])
+        self.assertEqual(origin.rpy, [1, 2, 3])
+        self.assertEqual(origin.quat_xyzw, None)
 
+    def test_robot_link_defaults_xyz_quat_xyzw_set(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test">
+  <link name="test_link">
+    <inertial>
+      <mass value="10.0"/>
+      <origin xyz="1 2 3" quat_xyzw="0.1 0.2 0.3 0.4"/>
+    </inertial>
+  </link>
+</robot>'''
+        robot = self.parse(xml)
+        origin = robot.links[0].inertial.origin
+        self.assertEqual(origin.xyz, [1, 2, 3])
+        self.assertEqual(origin.rpy, None)
+        self.assertEqual(origin.quat_xyzw, [0.1, 0.2, 0.3, 0.4])
+        
     def test_xml_with_UTF8_encoding(self):
         xml = b'''<?xml version="1.0" encoding="UTF-8"?>
 <robot name="test">
