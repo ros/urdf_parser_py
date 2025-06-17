@@ -13,7 +13,11 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
     ],
-    install_requires=['setuptools'],
+    install_requires=[
+        'setuptools',
+        'pyyaml',
+        'lxml'
+    ],
     zip_safe=True,
     keywords=['ROS2'],
     classifiers=[
