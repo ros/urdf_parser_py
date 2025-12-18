@@ -5,7 +5,7 @@ package_name = 'urdfdom_py'
 
 setup(
     name=package_name,
-    version='1.2.1',
+    version='1.2.1.post1',
     package_dir={'': 'src'},
     packages=['urdf_parser_py', 'urdf_parser_py.xml_reflection'],
     data_files=[
@@ -13,7 +13,11 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
     ],
-    install_requires=['setuptools'],
+    install_requires=[
+        'setuptools',
+        'pyyaml',
+        'lxml'
+    ],
     zip_safe=True,
     keywords=['ROS2'],
     classifiers=[
