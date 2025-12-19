@@ -521,7 +521,12 @@ class Reflection(object):
         # and find where the problematic parent element.
         for attribute in map(self.attribute_map.get, unset_attributes):
             try:
-                attribute.set_default(obj)
+                if attribute.xml_var == 'rpy':
+                  if 'quat_xyzw' in unset_attributes:
+                    attribute.set_default(obj)
+                else:
+                  attribute.set_default(obj)
+                  
             except ParseError:
                 raise
             except Exception as e:
