@@ -25,7 +25,11 @@ setup(
     maintainer_email='clalancette@openrobotics.org',
     description='Python implementation of the URDF parser.',
     license='BSD',
-    tests_require=['pytest'],
+    extras_require={
+        'test': [
+            'pytest',
+        ],
+    },
     entry_points={
         'console_scripts': [
             'display_urdf = urdf_parser_py.display_urdf:main',
