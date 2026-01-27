@@ -257,18 +257,25 @@ xmlr.reflect(JointCalibration, tag='calibration', params=[
 
 
 class JointLimit(xmlr.Object):
-    def __init__(self, effort=None, velocity=None, lower=None, upper=None):
+    def __init__(self, effort=None, velocity=None, lower=None, upper=None,
+                 acceleration=None, deceleration=None, jerk=None):
         self.effort = effort
         self.velocity = velocity
         self.lower = lower
         self.upper = upper
+        self.acceleration = acceleration
+        self.deceleration = deceleration
+        self.jerk = jerk
 
 
 xmlr.reflect(JointLimit, tag='limit', params=[
     xmlr.Attribute('effort', float),
     xmlr.Attribute('lower', float, False, 0),
     xmlr.Attribute('upper', float, False, 0),
-    xmlr.Attribute('velocity', float)
+    xmlr.Attribute('velocity', float),
+    xmlr.Attribute('acceleration', float, False, float('inf')),
+    xmlr.Attribute('deceleration', float, False, float('inf')),
+    xmlr.Attribute('jerk', float, False, float('inf'))
 ])
 
 # FIXME: we are missing __str__ here.
