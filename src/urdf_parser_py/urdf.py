@@ -257,18 +257,25 @@ xmlr.reflect(JointCalibration, tag='calibration', params=[
 
 
 class JointLimit(xmlr.Object):
-    def __init__(self, effort=None, velocity=None, lower=None, upper=None):
+    def __init__(self, effort=None, velocity=None, lower=None, upper=None,
+                 acceleration=None, deceleration=None, jerk=None):
         self.effort = effort
         self.velocity = velocity
         self.lower = lower
         self.upper = upper
+        self.acceleration = acceleration
+        self.deceleration = deceleration
+        self.jerk = jerk
 
 
 xmlr.reflect(JointLimit, tag='limit', params=[
     xmlr.Attribute('effort', float),
     xmlr.Attribute('lower', float, False, 0),
     xmlr.Attribute('upper', float, False, 0),
-    xmlr.Attribute('velocity', float)
+    xmlr.Attribute('velocity', float),
+    xmlr.Attribute('acceleration', float, False, float('inf')),
+    xmlr.Attribute('deceleration', float, False, float('inf')),
+    xmlr.Attribute('jerk', float, False, float('inf'))
 ])
 
 # FIXME: we are missing __str__ here.
@@ -471,7 +478,7 @@ xmlr.add_type('transmission',
 
 
 class Robot(xmlr.Object):
-    SUPPORTED_VERSIONS = ["1.0"]
+    SUPPORTED_VERSIONS = ["1.0", "1.1", "1.2"]
 
     def __init__(self, name=None, version="1.0"):
         self.aggregate_init()
@@ -555,6 +562,26 @@ class Robot(xmlr.Object):
 
         if self.version not in self.SUPPORTED_VERSIONS:
             raise ValueError("Invalid version; only %s is supported" % (','.join(self.SUPPORTED_VERSIONS)))
+
+        # Validate that acceleration, deceleration, and jerk are only used in version 1.2+
+        major = int(split[0])
+        minor = int(split[1])
+
+        if major == 1 and minor < 2:
+            for joint in self.joints:
+                if joint.limit is not None:
+                    if joint.limit.acceleration is not None and joint.limit.acceleration != float('inf'):
+                        raise ValueError(
+                            "Joint '%s': acceleration attribute requires URDF version 1.2, "
+                            "but version %s was specified" % (joint.name, self.version))
+                    if joint.limit.deceleration is not None and joint.limit.deceleration != float('inf'):
+                        raise ValueError(
+                            "Joint '%s': deceleration attribute requires URDF version 1.2, "
+                            "but version %s was specified" % (joint.name, self.version))
+                    if joint.limit.jerk is not None and joint.limit.jerk != float('inf'):
+                        raise ValueError(
+                            "Joint '%s': jerk attribute requires URDF version 1.2, "
+                            "but version %s was specified" % (joint.name, self.version))
 
 
 xmlr.reflect(Robot, tag='robot', params=[

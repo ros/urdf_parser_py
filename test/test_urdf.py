@@ -377,5 +377,203 @@ class TestCreateNew(unittest.TestCase):
         self.assertEqual(testcase.get('version'), '1.0')
 
 
+class TestJointLimitVersioning(unittest.TestCase):
+    """Tests for version-based validation of acceleration, deceleration, and jerk."""
+
+    @mock.patch('urdf_parser_py.xml_reflection.on_error',
+                mock.Mock(side_effect=ParseException))
+    def parse(self, xml):
+        return urdf.Robot.from_xml_string(xml)
+
+    def test_version_1_0_with_acceleration_fails(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test" version="1.0">
+  <link name="l1"/>
+  <link name="l2"/>
+  <joint name="j1" type="fixed">
+    <parent link="l1"/>
+    <child link="l2"/>
+    <limit effort="100" velocity="10" acceleration="5.0"/>
+  </joint>
+</robot>'''
+        self.assertRaises(ValueError, self.parse, xml)
+
+    def test_version_1_0_with_deceleration_fails(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test" version="1.0">
+  <link name="l1"/>
+  <link name="l2"/>
+  <joint name="j1" type="fixed">
+    <parent link="l1"/>
+    <child link="l2"/>
+    <limit effort="100" velocity="10" deceleration="5.0"/>
+  </joint>
+</robot>'''
+        self.assertRaises(ValueError, self.parse, xml)
+
+    def test_version_1_0_with_jerk_fails(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test" version="1.0">
+  <link name="l1"/>
+  <link name="l2"/>
+  <joint name="j1" type="fixed">
+    <parent link="l1"/>
+    <child link="l2"/>
+    <limit effort="100" velocity="10" jerk="100.0"/>
+  </joint>
+</robot>'''
+        self.assertRaises(ValueError, self.parse, xml)
+
+    def test_version_1_1_with_acceleration_fails(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test" version="1.1">
+  <link name="l1"/>
+  <link name="l2"/>
+  <joint name="j1" type="fixed">
+    <parent link="l1"/>
+    <child link="l2"/>
+    <limit effort="100" velocity="10" acceleration="5.0"/>
+  </joint>
+</robot>'''
+        self.assertRaises(ValueError, self.parse, xml)
+
+    def test_version_1_1_with_deceleration_fails(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test" version="1.1">
+  <link name="l1"/>
+  <link name="l2"/>
+  <joint name="j1" type="fixed">
+    <parent link="l1"/>
+    <child link="l2"/>
+    <limit effort="100" velocity="10" deceleration="5.0"/>
+  </joint>
+</robot>'''
+        self.assertRaises(ValueError, self.parse, xml)
+
+    def test_version_1_1_with_jerk_fails(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test" version="1.1">
+  <link name="l1"/>
+  <link name="l2"/>
+  <joint name="j1" type="fixed">
+    <parent link="l1"/>
+    <child link="l2"/>
+    <limit effort="100" velocity="10" jerk="100.0"/>
+  </joint>
+</robot>'''
+        self.assertRaises(ValueError, self.parse, xml)
+
+    def test_version_1_0_without_new_limits_succeeds(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test" version="1.0">
+  <link name="l1"/>
+  <link name="l2"/>
+  <joint name="j1" type="fixed">
+    <parent link="l1"/>
+    <child link="l2"/>
+    <limit effort="100" velocity="10"/>
+  </joint>
+</robot>'''
+        robot = self.parse(xml)
+        self.assertIsNotNone(robot)
+        self.assertEqual(robot.joints[0].limit.effort, 100)
+        self.assertEqual(robot.joints[0].limit.velocity, 10)
+
+    def test_version_1_1_without_new_limits_succeeds(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test" version="1.1">
+  <link name="l1"/>
+  <link name="l2"/>
+  <joint name="j1" type="fixed">
+    <parent link="l1"/>
+    <child link="l2"/>
+    <limit effort="100" velocity="10"/>
+  </joint>
+</robot>'''
+        robot = self.parse(xml)
+        self.assertIsNotNone(robot)
+        self.assertEqual(robot.joints[0].limit.effort, 100)
+        self.assertEqual(robot.joints[0].limit.velocity, 10)
+
+    def test_version_1_2_with_acceleration_succeeds(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test" version="1.2">
+  <link name="l1"/>
+  <link name="l2"/>
+  <joint name="j1" type="fixed">
+    <parent link="l1"/>
+    <child link="l2"/>
+    <limit effort="100" velocity="10" acceleration="5.0"/>
+  </joint>
+</robot>'''
+        robot = self.parse(xml)
+        self.assertIsNotNone(robot)
+        self.assertEqual(robot.joints[0].limit.acceleration, 5.0)
+
+    def test_version_1_2_with_deceleration_succeeds(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test" version="1.2">
+  <link name="l1"/>
+  <link name="l2"/>
+  <joint name="j1" type="fixed">
+    <parent link="l1"/>
+    <child link="l2"/>
+    <limit effort="100" velocity="10" deceleration="3.0"/>
+  </joint>
+</robot>'''
+        robot = self.parse(xml)
+        self.assertIsNotNone(robot)
+        self.assertEqual(robot.joints[0].limit.deceleration, 3.0)
+
+    def test_version_1_2_with_jerk_succeeds(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test" version="1.2">
+  <link name="l1"/>
+  <link name="l2"/>
+  <joint name="j1" type="fixed">
+    <parent link="l1"/>
+    <child link="l2"/>
+    <limit effort="100" velocity="10" jerk="200.0"/>
+  </joint>
+</robot>'''
+        robot = self.parse(xml)
+        self.assertIsNotNone(robot)
+        self.assertEqual(robot.joints[0].limit.jerk, 200.0)
+
+    def test_version_1_2_with_all_new_limits_succeeds(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test" version="1.2">
+  <link name="l1"/>
+  <link name="l2"/>
+  <joint name="j1" type="fixed">
+    <parent link="l1"/>
+    <child link="l2"/>
+    <limit effort="100" velocity="10" acceleration="5.0" deceleration="3.0" jerk="200.0"/>
+  </joint>
+</robot>'''
+        robot = self.parse(xml)
+        self.assertIsNotNone(robot)
+        self.assertEqual(robot.joints[0].limit.acceleration, 5.0)
+        self.assertEqual(robot.joints[0].limit.deceleration, 3.0)
+        self.assertEqual(robot.joints[0].limit.jerk, 200.0)
+
+    def test_version_1_2_without_new_limits_uses_defaults(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test" version="1.2">
+  <link name="l1"/>
+  <link name="l2"/>
+  <joint name="j1" type="fixed">
+    <parent link="l1"/>
+    <child link="l2"/>
+    <limit effort="100" velocity="10"/>
+  </joint>
+</robot>'''
+        robot = self.parse(xml)
+        self.assertIsNotNone(robot)
+        self.assertEqual(robot.joints[0].limit.acceleration, float('inf'))
+        self.assertEqual(robot.joints[0].limit.deceleration, float('inf'))
+        self.assertEqual(robot.joints[0].limit.jerk, float('inf'))
+
+
 if __name__ == '__main__':
     unittest.main()
