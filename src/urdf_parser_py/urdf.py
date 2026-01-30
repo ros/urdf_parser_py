@@ -478,7 +478,7 @@ xmlr.add_type('transmission',
 
 
 class Robot(xmlr.Object):
-    SUPPORTED_VERSIONS = ["1.0"]
+    SUPPORTED_VERSIONS = ["1.0", "1.1", "1.2"]
 
     def __init__(self, name=None, version="1.0"):
         self.aggregate_init()
