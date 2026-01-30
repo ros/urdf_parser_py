@@ -124,6 +124,17 @@ xmlr.reflect(Mesh, tag='mesh', params=[
     xmlr.Attribute('scale', 'vector3', required=False)
 ])
 
+class Capsule(xmlr.Object):
+    def __init__(self, radius=0.0, length=0.0):
+        self.radius = radius
+        self.length = length
+
+
+xmlr.reflect(Capsule, tag='capsule', params=[
+    xmlr.Attribute('radius', float),
+    xmlr.Attribute('length', float)
+])
+
 
 class GeometricType(xmlr.ValueType):
     def __init__(self):
@@ -131,7 +142,8 @@ class GeometricType(xmlr.ValueType):
             'box': Box,
             'cylinder': Cylinder,
             'sphere': Sphere,
-            'mesh': Mesh
+            'mesh': Mesh,
+            'capsule': Capsule
         })
 
     def from_xml(self, node, path):
@@ -471,7 +483,7 @@ xmlr.add_type('transmission',
 
 
 class Robot(xmlr.Object):
-    SUPPORTED_VERSIONS = ["1.0"]
+    SUPPORTED_VERSIONS = ["1.0", "1.1"]
 
     def __init__(self, name=None, version="1.0"):
         self.aggregate_init()
@@ -539,6 +551,19 @@ class Robot(xmlr.Object):
         assert root is not None, "No roots detected, invalid URDF."
         return root
 
+    def _check_capsule_version(self):
+        """Check that capsule geometry is not used with version 1.0."""
+        if self.version == "1.0":
+            for link in self.links:
+                for visual in link.visuals:
+                    if visual.geometry is not None and isinstance(visual.geometry, Capsule):
+                        xmlr.on_error("Capsule geometry is not supported in URDF version 1.0. "
+                                      "Please use version 1.1 or later.")
+                for collision in link.collisions:
+                    if collision.geometry is not None and isinstance(collision.geometry, Capsule):
+                        xmlr.on_error("Capsule geometry is not supported in URDF version 1.0. "
+                                      "Please use version 1.1 or later.")
+
     def post_read_xml(self):
         if self.version is None:
             self.version = "1.0"
@@ -556,6 +581,7 @@ class Robot(xmlr.Object):
         if self.version not in self.SUPPORTED_VERSIONS:
             raise ValueError("Invalid version; only %s is supported" % (','.join(self.SUPPORTED_VERSIONS)))
 
+        self._check_capsule_version()
 
 xmlr.reflect(Robot, tag='robot', params=[
     xmlr.Attribute('name', str),
