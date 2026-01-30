@@ -253,6 +253,12 @@ class TestURDFParser(unittest.TestCase):
 </robot>'''
         self.assertRaises(ValueError, self.parse, xml)
 
+    def test_version_attribute_1_1_valid(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="test" version="1.1">
+</robot>'''
+        self.parse_and_compare(xml)
+
 class LinkOriginTestCase(unittest.TestCase):
     @mock.patch('urdf_parser_py.xml_reflection.on_error',
                 mock.Mock(side_effect=ParseException))
@@ -375,6 +381,223 @@ class TestCreateNew(unittest.TestCase):
         self.assertTrue('version' in testcase.keys())
         self.assertEqual(testcase.get('name'), 'robot_name')
         self.assertEqual(testcase.get('version'), '1.0')
+
+
+class TestCapsuleGeometry(unittest.TestCase):
+    @mock.patch('urdf_parser_py.xml_reflection.on_error',
+                mock.Mock(side_effect=ParseException))
+    def parse(self, xml):
+        return urdf.Robot.from_xml_string(xml)
+
+    def parse_and_compare(self, orig):
+        xml = minidom.parseString(orig)
+        robot = urdf.Robot.from_xml_string(orig)
+        rewritten = minidom.parseString(robot.to_xml_string())
+        self.assertTrue(xml_matches(xml, rewritten))
+
+    def test_capsule_not_supported_in_version_1_0(self):
+        """Capsule geometry should fail in URDF version 1.0."""
+        xml = '''<?xml version="1.0"?>
+<robot name="capsule_test" version="1.0">
+  <link name="link1">
+    <visual>
+      <geometry>
+        <capsule radius="0.05" length="0.5"/>
+      </geometry>
+    </visual>
+  </link>
+</robot>'''
+        self.assertRaises(xmlr.core.ParseError, self.parse, xml)
+
+    def test_capsule_visual_geometry(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="capsule_test" version="1.1">
+  <link name="link1">
+    <visual>
+      <geometry>
+        <capsule radius="0.05" length="0.5"/>
+      </geometry>
+    </visual>
+  </link>
+</robot>'''
+        robot = self.parse(xml)
+        self.assertEqual("capsule_test", robot.name)
+        self.assertEqual(1, len(robot.links))
+        link = robot.links[0]
+        self.assertIsNotNone(link.visual)
+        self.assertIsInstance(link.visual.geometry, urdf.Capsule)
+        self.assertEqual(0.05, link.visual.geometry.radius)
+        self.assertEqual(0.5, link.visual.geometry.length)
+
+    def test_capsule_collision_geometry(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="capsule_collision_test" version="1.1">
+  <link name="link1">
+    <collision>
+      <geometry>
+        <capsule radius="0.1" length="1.0"/>
+      </geometry>
+    </collision>
+  </link>
+</robot>'''
+        robot = self.parse(xml)
+        self.assertEqual("capsule_collision_test", robot.name)
+        link = robot.links[0]
+        self.assertIsNotNone(link.collision)
+        self.assertIsInstance(link.collision.geometry, urdf.Capsule)
+        self.assertEqual(0.1, link.collision.geometry.radius)
+        self.assertEqual(1.0, link.collision.geometry.length)
+
+    def test_capsule_visual_and_collision_geometry(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="capsule_both_test" version="1.1">
+  <link name="link1">
+    <visual>
+      <geometry>
+        <capsule radius="0.05" length="0.5"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <capsule radius="0.1" length="1.0"/>
+      </geometry>
+    </collision>
+  </link>
+</robot>'''
+        robot = self.parse(xml)
+        link = robot.links[0]
+
+        # Check visual geometry
+        self.assertIsInstance(link.visual.geometry, urdf.Capsule)
+        self.assertEqual(0.05, link.visual.geometry.radius)
+        self.assertEqual(0.5, link.visual.geometry.length)
+
+        # Check collision geometry
+        self.assertIsInstance(link.collision.geometry, urdf.Capsule)
+        self.assertEqual(0.1, link.collision.geometry.radius)
+        self.assertEqual(1.0, link.collision.geometry.length)
+
+    def test_capsule_zero_values(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="capsule_zero_test" version="1.1">
+  <link name="link1">
+    <visual>
+      <geometry>
+        <capsule radius="0.0" length="0.0"/>
+      </geometry>
+    </visual>
+  </link>
+</robot>'''
+        robot = self.parse(xml)
+        link = robot.links[0]
+        capsule = link.visual.geometry
+        self.assertIsInstance(capsule, urdf.Capsule)
+        self.assertEqual(0.0, capsule.radius)
+        self.assertEqual(0.0, capsule.length)
+
+    def test_capsule_parse_and_compare(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="capsule_roundtrip_test" version="1.1">
+  <link name="link1">
+    <visual>
+      <geometry>
+        <capsule length="0.5" radius="0.05"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <capsule length="1.0" radius="0.1"/>
+      </geometry>
+    </collision>
+  </link>
+</robot>'''
+        self.parse_and_compare(xml)
+
+    def test_capsule_multiple_visuals(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="capsule_multi_visual_test" version="1.1">
+  <link name="link1">
+    <visual>
+      <geometry>
+        <capsule radius="0.05" length="0.5"/>
+      </geometry>
+    </visual>
+    <visual>
+      <geometry>
+        <capsule radius="0.1" length="1.0"/>
+      </geometry>
+    </visual>
+  </link>
+</robot>'''
+        robot = self.parse(xml)
+        link = robot.links[0]
+        self.assertEqual(2, len(link.visuals))
+        self.assertIsInstance(link.visuals[0].geometry, urdf.Capsule)
+        self.assertEqual(0.05, link.visuals[0].geometry.radius)
+        self.assertEqual(0.5, link.visuals[0].geometry.length)
+        self.assertIsInstance(link.visuals[1].geometry, urdf.Capsule)
+        self.assertEqual(0.1, link.visuals[1].geometry.radius)
+        self.assertEqual(1.0, link.visuals[1].geometry.length)
+
+    def test_capsule_multiple_visuals_and_collisions(self):
+        """Test multiple capsule geometries in both visual and collision."""
+        xml = '''<?xml version="1.0"?>
+<robot name="multi_capsule_test" version="1.1">
+  <link name="link1">
+    <visual>
+      <geometry>
+        <capsule radius="0.05" length="0.5"/>
+      </geometry>
+    </visual>
+    <visual>
+      <geometry>
+        <capsule radius="0.1" length="1.0"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <capsule radius="0.15" length="1.5"/>
+      </geometry>
+    </collision>
+    <collision>
+      <geometry>
+        <capsule radius="0.2" length="2.0"/>
+      </geometry>
+    </collision>
+  </link>
+</robot>'''
+        robot = self.parse(xml)
+        link = robot.links[0]
+
+        # Check multiple visual geometries
+        self.assertEqual(2, len(link.visuals))
+        self.assertIsInstance(link.visuals[0].geometry, urdf.Capsule)
+        self.assertEqual(0.05, link.visuals[0].geometry.radius)
+        self.assertEqual(0.5, link.visuals[0].geometry.length)
+        self.assertIsInstance(link.visuals[1].geometry, urdf.Capsule)
+        self.assertEqual(0.1, link.visuals[1].geometry.radius)
+        self.assertEqual(1.0, link.visuals[1].geometry.length)
+
+        # Check multiple collision geometries
+        self.assertEqual(2, len(link.collisions))
+        self.assertIsInstance(link.collisions[0].geometry, urdf.Capsule)
+        self.assertEqual(0.15, link.collisions[0].geometry.radius)
+        self.assertEqual(1.5, link.collisions[0].geometry.length)
+        self.assertIsInstance(link.collisions[1].geometry, urdf.Capsule)
+        self.assertEqual(0.2, link.collisions[1].geometry.radius)
+        self.assertEqual(2.0, link.collisions[1].geometry.length)
+
+    def test_capsule_programmatic_creation(self):
+        """Test creating a Capsule programmatically."""
+        capsule = urdf.Capsule(radius=0.05, length=0.5)
+        self.assertEqual(0.05, capsule.radius)
+        self.assertEqual(0.5, capsule.length)
+
+    def test_capsule_default_values(self):
+        """Test Capsule default values."""
+        capsule = urdf.Capsule()
+        self.assertEqual(0.0, capsule.radius)
+        self.assertEqual(0.0, capsule.length)
 
 
 if __name__ == '__main__':
