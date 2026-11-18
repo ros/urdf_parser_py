@@ -607,7 +607,7 @@ class Object(YamlReflection):
 
     @classmethod
     def from_xml_string(cls, xml_string):
-        node = etree.fromstring(xml_string)
+        node = parse_xml(xml_string)
         path = Path(cls.XML_REFL.tag, tree=etree.ElementTree(node))
         return cls.from_xml(node, path)
 
@@ -660,7 +660,7 @@ class Object(YamlReflection):
     """ Compatibility """
 
     def parse(self, xml_string):
-        node = etree.fromstring(xml_string)
+        node = parse_xml(xml_string)
         path = Path(self.XML_REFL.tag, tree=etree.ElementTree(node))
         self.read_xml(node, path)
         return self

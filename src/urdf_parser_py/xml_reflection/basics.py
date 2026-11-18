@@ -3,6 +3,15 @@ import yaml
 import collections.abc
 from lxml import etree
 
+
+def parse_xml(xml_string):
+    if isinstance(xml_string, str):
+        # Text is already decoded; do not reinterpret it using a declaration
+        # that described the original bytes.
+        return etree.fromstring(xml_string.encode('utf-8'),
+                                parser=etree.XMLParser(encoding='utf-8'))
+    return etree.fromstring(xml_string)
+
 def xml_string(rootXml, addHeader=True):
     # Meh
     xmlString = etree.tostring(rootXml, pretty_print=True, encoding='unicode')
