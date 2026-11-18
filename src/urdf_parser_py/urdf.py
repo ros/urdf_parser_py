@@ -9,18 +9,22 @@ xmlr.start_namespace('urdf')
 
 xmlr.add_type('element_link', xmlr.SimpleElementType('link', str))
 xmlr.add_type('element_xyz', xmlr.SimpleElementType('xyz', 'vector3'))
+xmlr.add_type('element_quat_xyzw', xmlr.SimpleElementType('quat_xyzw', 'vector4'))
 
 verbose = True
 
 
 class Pose(xmlr.Object):
-    def __init__(self, xyz=None, rpy=None):
+    def __init__(self, xyz=None, rpy=None, quat_xyzw=None):
         self.xyz = xyz
         self.rpy = rpy
+        self.quat_xyzw = quat_xyzw
 
     def check_valid(self):
         assert (self.xyz is None or len(self.xyz) == 3) and \
-            (self.rpy is None or len(self.rpy) == 3)
+            (self.rpy is None or len(self.rpy) == 3) and \
+            (self.quat_xyzw is None or len(self.quat_xyzw) == 4) and \
+            (self.rpy is None or self.quat_xyzw is None)
 
     # Aliases for backwards compatibility
     @property
@@ -38,7 +42,8 @@ class Pose(xmlr.Object):
 
 xmlr.reflect(Pose, tag='origin', params=[
     xmlr.Attribute('xyz', 'vector3', False, default=[0, 0, 0]),
-    xmlr.Attribute('rpy', 'vector3', False, default=[0, 0, 0])
+    xmlr.Attribute('rpy', 'vector3', False, default=[0, 0, 0]),
+    xmlr.Attribute('quat_xyzw', 'vector4', False)
 ])
 
 
